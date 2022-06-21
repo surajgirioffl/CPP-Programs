@@ -47,7 +47,10 @@ int main()
     *(*(matrix + 2) + 2) = 'o';
 
     myMatrix obj;
-    obj.display(matrix);
+    // obj.display(matrix);
+
+    cout << endl
+         << *matrix << endl;
 
     for (int i = 0; i < 3; i++)
         free(*matrix + i); // freeing inner allocated memory
