@@ -384,6 +384,12 @@ class ticTacToe : private allMenu
                 break;
             }
         }
+
+        /**Fixed bug. fixed abnormal termination of game when user select any empty cell to fill (particularly for cell number 9)". I have found that control auto send false only incase of cell number 9 input by user else it returns true. But it's wrong. We have to explicitly mention the return statement.
+         *this 'return true' is compulsory otherwise function return anything either true/false if programmer hasn't mentioned explicitly
+         *and if function returns false then as coded in called function the program will be terminate by understanding that user want's to exit the game.
+         */
+        return true;
     }
 
     /*to input 'X' or 'O' from computer in game. On success returns true else false*/
