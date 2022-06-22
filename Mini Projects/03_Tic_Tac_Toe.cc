@@ -199,25 +199,50 @@ class ticTacToe : private allMenu
          *8. 20,11,02
          */
 
+        /*FIXING HUGE BUG
+         *we must need to verify that the cell which are checking currently must have filled.
+         *If any of the cell in 'winning condition' is empty then there will no option to win. If cell contains 'space' then it will empty And we will check the condition for empty
+         *If we don't do so, there will always spaces which fulfill the winning conditions and user will win the match without fulfilling the winning conditions.
+         *
+         *
+         */
+
         /**Row-Wise. for 1,2,3*/
         for (int i = 0; i < 3; i++)
         {
-            if (matrix[i][0] == matrix[i][1] && matrix[i][1] == matrix[i][2]) // it is like "if(a==b && b==c)"
+            /*we are checking the empty cell. If any of the cell in current row is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
+            if (isCellEmpty(i, 0) || isCellEmpty(i, 1) || isCellEmpty(i, 2))
+                continue;                                                          // if cell is empty then there is no any possibility of winning. So, continue the loop
+            else if (matrix[i][0] == matrix[i][1] && matrix[i][1] == matrix[i][2]) // it is like "if(a==b && b==c)"
                 return true;
         }
 
         /**Column-Wise. for 4,5,6*/
         for (int i = 0; i < 3; i++)
         {
-            if (matrix[0][i] == matrix[1][i] && matrix[1][i] == matrix[2][i]) // it is like "if(a==b && b==c)"
+            /*we are checking the empty cell. If any of the cell in current column is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
+            if (isCellEmpty(0, i) || isCellEmpty(1, i) || isCellEmpty(2, i))
+                continue;                                                          // if cell is empty then there is no any possibility of winning. So, continue the loop
+            else if (matrix[0][i] == matrix[1][i] && matrix[1][i] == matrix[2][i]) // it is like "if(a==b && b==c)"
                 return true;
         }
 
         /**Diagonal-Wise. for 7,8*/
         // we can simply write if(conditions) to do here. Because size is known 3x3. But if there will custom size of matrix then we must need to use loop. Currently, we are not using loop here. But we will use it later for further extension if required.
-        if (matrix[0][0] == matrix[1][1] && matrix[1][1] == matrix[2][2]) // it is like "if(a==b && b==c)"
+        /*we are checking the empty cell. If any of the cell in current diagonal is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
+        if (isCellEmpty(0, 0) || isCellEmpty(1, 1) || isCellEmpty(2, 2))
+        {
+        } /*do nothing. Just we have to execute this block if condition satisfied that any of cell is empty. And it's not possible to win via this winning condition */ // we can't return false here because it may be possible that any below winning condition will satisfy.
+        else if (matrix[0][0] == matrix[1][1] && matrix[1][1] == matrix[2][2])                                                                                          // it is like "if(a==b && b==c)"
             return true;
-        if (matrix[0][2] == matrix[1][1] && matrix[1][1] == matrix[2][0]) // it is like "if(a==b && b==c)"
+
+        /*we are checking the empty cell. If any of the cell in current diagonal is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
+        if (isCellEmpty(0, 2) || isCellEmpty(1, 1) || isCellEmpty(2, 0))
+        {
+            // empty
+            /*see above 2nd comment for details*/
+        }
+        else if (matrix[0][2] == matrix[1][1] && matrix[1][1] == matrix[2][0]) // it is like "if(a==b && b==c)"
             return true;
 
         /*if all conditions fails means no any of 8 winning conditions satisfied. So, No winning & as expected we will return false*/
@@ -225,7 +250,8 @@ class ticTacToe : private allMenu
     }
 
     /*when user input command 1...9 to select a cell then this function will take that cellNumber (number from 1-9) and give the real postion of the cell by giving row index in 'i' and column index in 'j'*/
-    void commandInterpreter(short cellNumber, short &i, short &j)
+    void
+    commandInterpreter(short cellNumber, short &i, short &j)
     {
         switch (cellNumber)
         {
@@ -428,10 +454,25 @@ class ticTacToe : private allMenu
                 if (filledCells > 4)
                     if (isWonTheGame(userChar))
                     {
+                        system("cls"); // clear the display
                         displayGamePad(true);
                         cout << "-_-_-_-_-_-_-_-_-_-_-_-_CONGRATULATION, YOU WON THE GAME-_-_-_-_-_-_-_-_-_-_-_-_" << endl;
                         wonFlag = true;
                         break;
+                    }
+                    /*COMMENT CODE 1021
+                     *actually the person who started the game will end the game. Means here user will end the game by selecting the last empty cell.
+                     *So, when last cell is filled by user then there is no cell left for computer turn.
+                     *So, when filledCells==9 we have to break the loop.
+                     *Control will come in below elif only if neither user nor computer won the game. Means when DRAW condition occurs.
+                     */
+                    else if (filledCells == 9)
+                    {
+                        system("cls"); /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
+                        cout << "\n\033[38;5;190m********************\033[38;5;201m\033[1m\033[3mGamePad After '" << (filledCells / 2) + 1 << "' User Turn"
+                             << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*****************\033[0m" << endl;
+                        displayGamePad(); // displaying the draw gamePad
+                        break;            // breaking the loop because all cells are filled and no one won. (DRAW)
                     }
             }
             else
@@ -444,7 +485,9 @@ class ticTacToe : private allMenu
                 if (filledCells > 4)
                     if (isWonTheGame(computerChar))
                     {
-                        cout << "Computer won the game" << endl;
+                        system("cls");
+                        displayGamePad();
+                        cout << "COMPUTER WON THE GAME." << endl;
                         wonFlag = true;
                         break;
                     }
