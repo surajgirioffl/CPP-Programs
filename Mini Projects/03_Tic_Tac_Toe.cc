@@ -45,6 +45,44 @@ public:
         cout << "\e[1;36mDeveloper: Suraj Kumar Giri\e[0m" << endl;
     }
 
+    /*top block of gameRestartMenu which need to print repeatedly if user clear the screen*/
+    void gameRestartMenuBlock()
+    {
+        cout << "\n\n\033[38;5;208m+++++++++++++++++++GAME RESTART MENU++++++++++++++++++++\033[0m" << endl;
+        cout << "\033[38;5;201mDo you want to restart the game?" << endl
+             << "\033[38;5;190m=> Press '1' or 'enter' to restart the game." << endl
+             << "=> Press '#' to exit the game." << endl
+             << "=> Press '@' to clear the display.\033[0m" << endl
+             << "\033[38;5;159mWrite your choice:\033[0m" << endl;
+        cout << "$ ";
+    }
+
+    /*display the requires command to user to restart the game. returns true if user wants to restart the game else false*/
+    bool gameRestartMenu()
+    {
+        while (true)
+        {
+            gameRestartMenuBlock();
+            fflush(stdin); // flushing the standard input stream's buffer
+            char choice = cin.get();
+            short choiceInInt = choice - 48; // converting character to integer using ASCII
+            if (choiceInInt == 1 || choice == '\n')
+                return true; // means user want to restart the game
+            else if (choice == '@')
+            {
+                system("cls");
+                continue;
+            }
+            else if (choice == '#')
+                return false; // if user exits the game
+            else
+            {
+                cout << "\033[1;31mFatal Error: Invalid choice." << endl;
+                cout << "\033[2mPlease select a choice again.\033[0m" << endl;
+            }
+        }
+    }
+
     void gameLevelMenuBlock()
     {
         cout << "\033[1;34m===============GAME LEVEL MENU================\033[0m" << endl;
@@ -55,6 +93,11 @@ public:
         cout << "=> Press '@' for clear the display.\033[0m" << endl;
         cout << "\033[38;5;123mWrite your choice:\033[0m" << endl;
     }
+
+    // /*take user input for menu displayed by called function. Returns userChoiceInInt if choice is correct and -1 if user wants to exit. I have defined this function user interaction in many menus are similar and it cold be defined in a function at one place*/
+    // short interactWithUserInMenu()
+    // {
+    // }
 
     /*Menu to ask user for level of game he/she wants to play. returns the selected level (1-easy,2-medium,3-impossible) and returns -1 if user exits the game*/
     short gameLevelMenu()
@@ -84,6 +127,7 @@ public:
         }
     }
 };
+
 class ticTacToe : private allMenu
 {
     char matrix[3][3]; // for matrix of Tic-Tac-Toe
@@ -529,10 +573,24 @@ public:
 /*main() function*/
 int main()
 {
-    system("cls");
-    allMenu menuObject;
-    menuObject.welcomeMenu();
-
-    ticTacToe obj;
-    obj.start();
+    while (true)
+    {
+        system("cls");
+        {
+            /*using block because after returning of control then object will be destroyed by destructor*/
+            allMenu menuObject;
+            menuObject.welcomeMenu();
+            ticTacToe obj;
+            obj.start();
+        }
+        allMenu menuObject;
+        if (menuObject.gameRestartMenu())
+            continue;
+        else
+            break;
+    }
+    cout << "\n\033[38;5;51mTHANKS FOR USING TIC-TAC-TOE." << endl
+         << "\033[38;5;128mSee you soon!" << endl
+         << "Bye Bye........." << endl;
+    cout << "\033[1;32mExited from main() successfully.\e[0m" << endl;
 }
