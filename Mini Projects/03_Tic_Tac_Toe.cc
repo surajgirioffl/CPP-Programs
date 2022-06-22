@@ -566,7 +566,7 @@ public:
 
     bool start()
     {
-        startGame();
+        return startGame();
     }
 };
 
@@ -581,7 +581,8 @@ int main()
             allMenu menuObject;
             menuObject.welcomeMenu();
             ticTacToe obj;
-            obj.start();
+            if (!obj.start()) // start returns true after successful completion of game one times
+                break;        // if start returns false means user want to exit the game.
         }
         allMenu menuObject;
         if (menuObject.gameRestartMenu())
@@ -593,4 +594,5 @@ int main()
          << "\033[38;5;128mSee you soon!" << endl
          << "Bye Bye........." << endl;
     cout << "\033[1;32mExited from main() successfully.\e[0m" << endl;
+    system("pause");
 }
