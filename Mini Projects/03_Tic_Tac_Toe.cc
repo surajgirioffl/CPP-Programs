@@ -140,8 +140,17 @@ class ticTacToe : private allMenu
         medium,
         impossible
     } level;
+
+    /*we need the position of all 3 cells (because only 3 cell are used to win) which are responsible for winning the game. We can it to do things like show 'strikethrough' in winningCell during display of gamePad after winning of game*/
     /*if user/computer won the game then the position of all three cells which are responsible for winning are following:*/
-    //
+    short positionOfWinningCells[6]; /*initially it will {0,0,0,0,0,0}
+                                      *let it is {0,0,1,1,2,2} after assigned by isWonTheGame() function then
+                                      *position of first cell = (0,0)
+                                      *position of second cell = (1,1)
+                                      *position of third cell = (2,2)
+                                      *We can see that these three cells are responsible for winning.
+                                      *So, we will check continuous value in array to get position of winningCell where each 2 value is position of one winningCell.
+                                      */
 
     /*interact with user to select the playing character and also assign the respective character to variables 'computerChar' & 'userChar' on the basis of user input*/
     void playingCharacterSelector()
@@ -258,7 +267,14 @@ class ticTacToe : private allMenu
             if (isCellEmpty(i, 0) || isCellEmpty(i, 1) || isCellEmpty(i, 2))
                 continue;                                                          // if cell is empty then there is no any possibility of winning. So, continue the loop
             else if (matrix[i][0] == matrix[i][1] && matrix[i][1] == matrix[i][2]) // it is like "if(a==b && b==c)"
+            {
+                /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
+                short tempCellPosition[] = {i, 0, i, 1, i, 2}; // all 3 cells position one by one respectively
+                for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
+                    positionOfWinningCells[j] = tempCellPosition[j];
+
                 return true;
+            }
         }
 
         /**Column-Wise. for 4,5,6*/
@@ -268,7 +284,14 @@ class ticTacToe : private allMenu
             if (isCellEmpty(0, i) || isCellEmpty(1, i) || isCellEmpty(2, i))
                 continue;                                                          // if cell is empty then there is no any possibility of winning. So, continue the loop
             else if (matrix[0][i] == matrix[1][i] && matrix[1][i] == matrix[2][i]) // it is like "if(a==b && b==c)"
+            {
+                /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
+                short tempCellPosition[] = {0, i, 1, i, 2, i}; // all 3 cells position one by one respectively
+                for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
+                    positionOfWinningCells[j] = tempCellPosition[j];
+
                 return true;
+            }
         }
 
         /**Diagonal-Wise. for 7,8*/
@@ -278,7 +301,13 @@ class ticTacToe : private allMenu
         {
         } /*do nothing. Just we have to execute this block if condition satisfied that any of cell is empty. And it's not possible to win via this winning condition */ // we can't return false here because it may be possible that any below winning condition will satisfy.
         else if (matrix[0][0] == matrix[1][1] && matrix[1][1] == matrix[2][2])                                                                                          // it is like "if(a==b && b==c)"
+        {
+            /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
+            short tempCellPosition[] = {0, 0, 1, 1, 2, 2}; // all 3 cells position one by one respectively
+            for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
+                positionOfWinningCells[j] = tempCellPosition[j];
             return true;
+        }
 
         /*we are checking the empty cell. If any of the cell in current diagonal is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
         if (isCellEmpty(0, 2) || isCellEmpty(1, 1) || isCellEmpty(2, 0))
@@ -287,7 +316,13 @@ class ticTacToe : private allMenu
             /*see above 2nd comment for details*/
         }
         else if (matrix[0][2] == matrix[1][1] && matrix[1][1] == matrix[2][0]) // it is like "if(a==b && b==c)"
+        {
+            /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
+            short tempCellPosition[] = {0, 2, 1, 1, 2, 0}; // all 3 cells position one by one respectively
+            for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
+                positionOfWinningCells[j] = tempCellPosition[j];
             return true;
+        }
 
         /*if all conditions fails means no any of 8 winning conditions satisfied. So, No winning & as expected we will return false*/
         return false;
@@ -431,6 +466,21 @@ class ticTacToe : private allMenu
         return true;
     }
 
+    /*returns true if passed position(i,j) is the position of any one of 3 cells used in winning the game else returns false*/
+    bool isPositionOfWinningCell(int i, int j)
+    {
+        /*Total 3 winning cells are possible and we have stored the position of all winning cells in array positionOfWinningCells[] in function isWonTheGame()
+         *positionOfWinningCells[] = {x0, y0, x1, y1, x2, y2, x3, y3, x4, y4, x5, y5};
+         */
+        if (positionOfWinningCells[0] == i && positionOfWinningCells[1] == j)
+            return true;
+        else if (positionOfWinningCells[2] == i && positionOfWinningCells[3] == j)
+            return true;
+        else if (positionOfWinningCells[4] == i && positionOfWinningCells[5] == j)
+            return true;
+        return false;
+    }
+
     /*To display the matrix/GamePad of Tic-Tac-Toe. This function can be used to display while playing and after won the game also. Pass 'true' in argument if you want to display after won else default argument is 'false' and no need to pass it.*/
     void displayGamePad(bool isWon = false)
     {
@@ -445,9 +495,19 @@ class ticTacToe : private allMenu
 
                 /****cell character printing starts*/
                 if (isCellEmpty(i, j))
-                    cout << "\033[0m\033[38;5;234m\e[2m\e[3m" << command++ << "  \033[0m";
+                    cout << "\033[0m\033[38;5;236m\e[2m\e[3m" << command++ << "  \033[0m"; // initially 234m
                 // cout << matrix[i][j] << "\033[0m\e[2m" << command++ << "  \033[0m";//initially, this code is used above but it prints extra space which hamper the cells uniform area
-
+                else if (isWon == true && isPositionOfWinningCell(i, j)) // only execute when user/computer won the game.
+                {
+                    /*control will come inside this block only if user / computer won the game and the current cell position in loop = position of any one of the three winning cells*/
+                    /*we already have the position of all 3 winning cells in the data member (array) positionOfWinningCells[]*/
+                    /*adding different color for 'X' and 'O' along strikethrough because these cells are winning cells*/
+                    if (matrix[i][j] == 'X')
+                        cout << "\033[38;5;202m\033[9m\033[3m\033[4m\033[48;5;165m\033[38;5;232m" << matrix[i][j] << "\033[0m  ";
+                    else if (matrix[i][j] == 'O')
+                        cout << "\033[1;36m\033[9m\033[3m\033[4m\033[48;5;165m\033[38;5;232m" << matrix[i][j] << "  \033[0m";
+                    command++; // as cell traversal increases the command for user 1...9 will increases
+                }
                 else // means cell is filled by user/computer input
                 {
                     /*adding different color for 'X' and 'O'*/
@@ -506,7 +566,7 @@ class ticTacToe : private allMenu
                     {
                         system("cls"); // clear the display
                         displayGamePad(true);
-                        cout << "-_-_-_-_-_-_-_-_-_-_-_-_CONGRATULATION, YOU WON THE GAME-_-_-_-_-_-_-_-_-_-_-_-_" << endl;
+                        cout << "\n-_-_-_-_-_-_-_-_-_-_-_-_CONGRATULATION, YOU WON THE GAME-_-_-_-_-_-_-_-_-_-_-_-_" << endl;
                         wonFlag = true;
                         break;
                     }
@@ -536,7 +596,7 @@ class ticTacToe : private allMenu
                     if (isWonTheGame(computerChar))
                     {
                         system("cls");
-                        displayGamePad();
+                        displayGamePad(true);
                         cout << "COMPUTER WON THE GAME." << endl;
                         wonFlag = true;
                         break;
@@ -565,6 +625,10 @@ public:
         computerChar = 'O'; // assigning by default value
         userChar = 'X';     // assigning by default value
         filledCells = 0;    // Initially, number of cells filled with 'X' or 'O' will by zero.
+
+        /*assigning base value to the array positionOfWinningCells*/
+        for (short i = 0; i < 6; i++)
+            positionOfWinningCells[i] = 0;
     }
 
     /*destructor*/
