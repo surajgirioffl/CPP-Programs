@@ -31,6 +31,11 @@ int main()
     for (int i = 0; i < 3; i++)
         matrix[i] = (char *)calloc(3, sizeof(char));
 
+    // cout << "****************************" << endl;
+    // cout << "Address in 'matrix'   = " << (int)matrix << endl;
+    // for (int i = 0; i < 3; i++)
+    //     cout << "Address in 'matrix[" << i << "] = " << (int)&*(matrix + i) << endl;
+
     // for matrix+0
     **matrix = 'x';
     *(*matrix + 1) = 'y';
@@ -49,8 +54,8 @@ int main()
     myMatrix obj;
     // obj.display(matrix);
 
-    cout << endl
-         << *matrix << endl;
+    // cout << endl
+    //  << *matrix << endl;
 
     for (int i = 0; i < 3; i++)
         free(*matrix + i); // freeing inner allocated memory
