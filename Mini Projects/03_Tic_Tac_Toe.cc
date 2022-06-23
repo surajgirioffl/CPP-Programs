@@ -18,6 +18,10 @@
   20 21 22
  */
 
+/*MORE:
+ *1) see 'COMMENT BLOCK 1200' for know about access rights of nested class to parent class and vice versa.
+ */
+
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
@@ -31,6 +35,20 @@ public:
         time_t seed = time(NULL);
         srand(seed);
         return rand();
+    }
+
+    /*take argument of row and column i.e, position of a cell and the 3x3 matrix base address. Returns true if cell is empty else false.*/
+    bool isCellEmpty(short row, short col, char matrix[][3])
+    {
+        if (matrix[row][col] == ' ') // if cell filled with space then it will be empty
+            return true;
+        return false;
+    }
+
+    /*take argument of row and column i.e, position of a cell and the 3x3 matrix base address. Returns true if cell is filled else false.*/
+    bool isCellFilled(short row, short col, char matrix[][3])
+    {
+        return !isCellEmpty(row, col, matrix); /*isCellEmpty() returns false if cell is filled else true*/
     }
 };
 
@@ -134,6 +152,7 @@ public:
 
 class ticTacToe : private allMenu
 {
+    /*****data members start*****/
     char matrix[3][3]; // for matrix of Tic-Tac-Toe
     char computerChar; // for computer playing character like 'X' or 'O'. By default 'O'
     char userChar;     // for user playing character like 'X' or 'O'. By default 'X'
@@ -145,6 +164,242 @@ class ticTacToe : private allMenu
         impossible
     } level;
 
+    /*class as a data member of class 'ticTacToe'. (Nested Class).*/
+    /*CLASS FOR THE LOGIC OF MEDIUM LEVEL OF TIC-TAC-TOE (logic for, how the computer will restrict user to win + try to win by filling the appropriate cells of matrix of ticTacToe).
+     *use this class member function only after at least 3 cells of matrix filled (2 by user and 1 by computer (by default, user will start the game in this program)) &
+     *because win/loss only possible if at least 3 cells are filled by one participants.
+     */
+    class mediumLevel
+    {
+        /******************************NOTE FOR NESTED CLASS************************************** COMMENT BLOCK 1200
+         **INSIDE NESTED CLASS (a class as data member of another class).
+         *we can only access any data member or member function of parent class by an object/instance of the parent class.
+         *But we have an additional facility than general is that, in nested class we can access all private/public/protected data members/ member functions of parent class using an object of the parent class without any restriction.
+         *Nested Class is only accessible inside it's parent class.
+         *There is no scope of nested class outside of the parent class in which it is defined.
+         *FOCUS:: Here, we can only access the parent class data member/member function by creating a new object of parentClass. So, we can't access the data member value in current object of parentClass.
+         *Below 2 lines are from book of c++ by BJARNE STROUSTRUP (the developer of c++)
+         *1.) A C++ nested class does not have access to an object of the enclosing class. (myEdit: here 'an object' means 'current object' of enclosing class. See below line for more clear explanation by STROUSTRUP)
+         *2.) A nested class has access to members of its enclosing class, even to private members (just as a member function has), but has no notion of a current object of the enclosing class.
+         *So, it is clear that, nested class has to create new object of the enclosing class and that new object will not have any data of current class.
+         *KEEP IN MIND, each object of a class is different. Different objects of same class have same template but having different values. Each object of a class has different block of allocated memory and holds different values. Class is a blueprint and multiple different objects are created using this blueprint.
+         *FOCUS: I have solved the above limitation, by passing the required value (dataMember) from current object of enclosing class to the nested class object via parametrized constructor of nested class while creating instance of nested class in enclosing class. And In this way, I have used the dataMembers of current object of enclosing class in nested class without any access issue. (This is due to power of constructor)
+         * (We can eliminate this limitation by FRIEND function. Friend function can access the all private/public/protected data members & member functions of a class by the object of that class. It can also work with multiple class at same time and can be used to operate on objects of different classes at same time.). But we will not use it here.
+         *
+         **INSIDE THE PARENT CLASS,
+         *accessing the nested class (child class) from parent class is like accessing the class dataMember or memberFunction from outside the class (let say from main() function).
+         *Parent class can access the memberFunction or dataMember of it's child class (nested class) only by an object of the child class (nested class)
+         *But parent class has access like outsider. That is, parent class can only access public memberFunctions and dataMember of the child class with the help of an object of child class.
+         *Parent class can't access any private & protected dataMember or memberFunction of the child class
+         *
+         *******************************************************************************************/
+
+        /*-------------------------------------LOGIC FOR MEDIUM LEVEL---------------------------------------------*/
+        /*WHAT'S TO DO:
+         *If condition satisfied for winning in next filling by user then computer has to restrict it.
+         *If condition satisfied for winning in next filling by computer then computer has to fill it.
+         */
+        /*CONDITION TO WIN IN NEXT FILLING BY USER OR COMPUTER. (Total 8 winning lines we have check i.e., 3 rows + 3 columns + 2 diagonals).
+         *1) 2 cells must be filled in single row/column/diagonal with 'X' or 'O' and left one cell should be empty.
+         */
+        /*PROGRAM LOGIC:
+         *1) 1st check, is two cells filled? If yes then check 3rd cell if it is empty then check character in both filled cell. If both character is same then fill computer character.
+            If both character belongs to computer then 'computer will win' else both characters belongs to user and computer will restrict the user to win by filling computerChar.
+         *2) we have check the above logic1 for all 8 lines of winning i.e, 3 rows + 3 columns + 2 diagonals.
+            all 8 lines will be check in worst case otherwise if condition of filling fulfilled anywhere the function will returns the cellNumber to fill.
+         */
+
+        // now starting programming for mediumLevel
+        char matrix[3][3]; // gamePad of ticTacToe
+
+    public:
+        /*take arguments of row and column and assign the desired position in passed row and column. Returns true if winning of computer/restricting of user condition found else false.
+         *If returns true means winning/restring condition found and row,column contains desired position of cell to fill.
+         *If false returns then passed row and column doesn't contains desired position of cell to fill. And to fill this you have to use another logic or easyLevel method. (Recommended to use another logic, which leads to win)
+         */
+        bool whichCellShouldFilled(short &row, short &column)
+        {
+            general generalObj; /*creating the instance of the class 'general'*/
+
+            /*for rows (in first iteration) and column (in 2nd iteration). */
+            short forIteration = 0;                              /*for counting the iteration in while loop*/
+            for (forIteration; forIteration < 2; forIteration++) /* forIteration=0 for rows (3 rows) and forIteration=1 for columns (3 columns)*/
+            {
+                /*I am trying to perform both rows and columns operations in a loop because cells index reversed in column in comparision to rows and vice versa).
+                 *In 'isWonTheGame()' function I have written the code of rows and columns separately. You can see it.
+                 *But we can automate it in loop because only index are reversing and our lines of code become half. Edit: I have tried it below. LOC decreases but not as expected.
+                 *We have to use conditional for rows and column with separate code
+                 */
+                for (short i = 0; i < 3; i++)
+                {
+                    short filledCellsCounter = 0; // count the filled cells in current row or column
+                    short emptyCellsCounter = 0;  // count the filled cells in current row or column
+                    for (short j = 0; j < 3; j++)
+                    {
+                        /*for rows*/
+                        if (forIteration == 0) /*Means for rows*/
+                        {
+                            if (generalObj.isCellFilled(i, j, matrix)) // we can't use "parentInstance.isCellFilled(i, j)" because 'parentInstance' is new object containing garbage values. And we need to access the matrix of current object of enclosing class which is not accessible by nested class. So, we have used parametrized constructor.
+                                filledCellsCounter++;
+                            else
+                                emptyCellsCounter++; /*we can also use (3-filledCellsCounter) outside this loop to find the number of empty cells*/
+                        }
+                        /*for columns*/
+                        else // if (forIteration == 1) /*Means for column*/
+                        {
+                            if (generalObj.isCellFilled(j, i, matrix)) // reversed for column
+                                filledCellsCounter++;
+                            else
+                                emptyCellsCounter++;
+                        }
+                    } /*end of inner for loop*/
+
+                    if (filledCellsCounter == 2) /*possibility of winning if both filled cell have same playingCharacter*/
+                    {
+                        /*-----------------FOR ROWS AND COLUMNS----------------------*/
+                        /*
+                         *in current line (row/column),
+                         *one cell will definitely empty (contains space).
+                         *both filled cell may contains 'X'(next winning condition of player having 'X') OR 'O'(next winning condition of player having 'O') OR both (no winning condition)
+                         */
+
+                        char playingCharacter1; // to store the character filled in filledCell 1
+                        char playingCharacter2; // to store the character filled in filledCell 2
+                        short flag = 0;         // flag to indicate no. of playingCharacter stored for checking
+
+                        if (forIteration == 0) /****** for rows*******/
+                        {
+                            /*we have to access all cells of current row again to check what's filled in it.*/
+                            for (short j = 0; j < 3; j++)
+                            {
+                                /*COMMENT BLOCK 1201
+                                 *In this situation, we have 3 cells in 2 cells are filled and 1 cell is empty
+                                 *if both filled cells have same playingCharacter (any one of 'X' and 'O')
+                                 *then we have to return the postion of empty cell to fill and win the game (if playingCharacter is of computer) or restrict winning the user (if playingCharacter is of user).
+                                 */
+                                /*now we have to store 2 characters of 2 filledCell in two variable declared above. But in one iteration, we have to store only one character. So, we use flag to indicate iteration & perform the desired operation*/
+                                if (generalObj.isCellFilled(i, j, matrix))
+                                {
+                                    if (flag == 0)
+                                    {
+                                        playingCharacter1 = matrix[i][j];
+                                        flag++;
+                                    }
+                                    else if (flag == 1) // after storing one I have stores the 2nd playingCharacter
+                                        playingCharacter2 = matrix[i][j];
+                                }
+                                else if (matrix[i][j] == ' ') // empty. means if both filled cell have same playingCharacter then we have to send position of this blank cell.
+                                {
+                                    /*we have to pass position of cell to fill (empty) via reference received in row, column*/
+                                    row = i;
+                                    column = j;
+                                    /*there is no use of above 2 lines of assigning if playingCharacter1!=playingCharacter2*/
+                                }
+                            }
+                        }
+                        else // if(forIteration==1)/*****for columns******/
+                        {
+                            /*we have to access all cells of current column again to check what's filled in it.*/
+                            for (short j = 0; j < 3; j++)
+                            {
+                                /*see above comment -> COMMENT BLOCK 1201*/
+                                /*now we have to store 2 characters of 2 filledCell in two variable declared above. But in one iteration, we have to store only one character. So, we use flag to indicate iteration & perform the desired operation*/
+                                if (generalObj.isCellFilled(j, i, matrix))
+                                {
+                                    if (flag == 0)
+                                    {
+                                        playingCharacter1 = matrix[j][i];
+                                        flag++;
+                                    }
+                                    else if (flag == 1) // after storing one I have stores the 2nd playingCharacter
+                                        playingCharacter2 = matrix[j][i];
+                                }
+                                else if (matrix[j][i] == ' ') // empty. means if both filled cell have same playingCharacter then we have to send position of this blank cell.
+                                {
+                                    /*we have to pass position of cell to fill (empty) via reference received in row, column*/
+                                    row = j;
+                                    column = i;
+                                    /*there is no use of above 2 lines of assigning if playingCharacter1!=playingCharacter2*/
+                                }
+                            }
+                        }
+
+                        if (playingCharacter1 == playingCharacter2) // if both playingCharacter are same then it is winning condition and 'row' and 'column' contains the desired position.
+                            return true;
+                    }
+                    else
+                        continue; /*for next row/column*/
+                }                 /*end of 1st for loop*/
+            }                     /*end of outer most for loop*/
+
+            /*-----------------FOR DIAGONALS----------------------*/
+            /*
+             *1) 00,11,22 (logic to use loop for automation: row==column)
+             *2) 02,11,20 (logic to use loop for automation: row is increasing by 1 and column is decreasing by 1)
+             */
+
+            /*if none of above return execute means there is no condition of either winning of user or computer.
+             *So, we return false to indicate that don't use passed referenced 'row' & 'column'. Use any other logic to fill the cell (because currently there is no winning situation).
+             */
+            return false;
+        }
+
+        /*parametrized constructor. We don't have access to the values current object of enclosing class. To solve this, I have used parametrized constructor and passed the matrix and save in this nested class's current object*/
+        mediumLevel(char matrix[][3])
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                    this->matrix[i][j] = matrix[i][j];
+            }
+        }
+
+        /*destructor*/
+        ~mediumLevel() {}
+    };
+
+    /*class for logic easyLevel of ticTacToe*/
+    class easyLevel
+    {
+        char matrix[3][3]; // gamePad of ticTacToe. It is required because we don't have access to the matrix(gamePad) of current object of the enclosing class.
+
+    public:
+        /*take arguments of row and column and assign the position of any random empty cell in passed row and column.*/
+        void whichCellShouldFilled(short &row, short &column)
+        {
+            /*We will not use any advanced logic here. We will simple use random number b/w 1-9 and fill the cell. */
+            general generalObj;       // instance of general class
+            ticTacToe parentInstance; /*creating instance of the parent class*/
+            int modifier = 21;        // taking any random number (let 21) to modify cellNumber (because randomNumber() changes value every second. But loop may be go in next iteration within a second. If we don't modify the value then we will get same result) //no effect on logic
+            while (true)
+            {
+                short cellNumber = (modifier + generalObj.randomNumber()) % 10; //%10 because if a number divided by x then remainder will be from 0 to x-1. And here we need value from 1 to 9
+                /*now we have to interpret the command (cellNumber) to it's proper index to insert the playingCharacter in the matrix/GamePad*/
+                parentInstance.commandInterpreter(cellNumber, row, column);
+                if (generalObj.isCellEmpty(row, column, matrix)) // returns true if cell is empty else false
+                    break;
+                else
+                {
+                    modifier *= 3; // multiplying by random number, let 3
+                    continue;
+                }
+            }
+        }
+
+        /*parametrized constructor. We don't have access to the values current object of enclosing class. To solve this, I have used parametrized constructor and passed the matrix and save in this nested class's current object*/
+        easyLevel(char matrix[][3])
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                    this->matrix[i][j] = matrix[i][j];
+            }
+        }
+
+        /*destructor*/
+        ~easyLevel() {}
+    };
+
     /*we need the position of all 3 cells (because only 3 cell are used to win) which are responsible for winning the game. We can it to do things like show 'strikethrough' in winningCell during display of gamePad after winning of game*/
     /*if user/computer won the game then the position of all three cells which are responsible for winning are following:*/
     short positionOfWinningCells[6]; /*initially it will {0,0,0,0,0,0}
@@ -155,6 +410,9 @@ class ticTacToe : private allMenu
                                       *We can see that these three cells are responsible for winning.
                                       *So, we will check continuous value in array to get position of winningCell where each 2 value is position of one winningCell.
                                       */
+    /****data members end ****/
+
+    /****member function starts ****/
 
     /*interact with user to select the playing character and also assign the respective character to variables 'computerChar' & 'userChar' on the basis of user input*/
     void playingCharacterSelector()
@@ -224,6 +482,12 @@ class ticTacToe : private allMenu
         if (matrix[row][col] == ' ') // if cell filled with space then it will be empty
             return true;
         return false;
+    }
+
+    /*returns true if cell is filled else false. Takes argument of rows and column*/
+    bool isCellFilled(short row, short col)
+    {
+        return !isCellEmpty(row, col); /*isCellEmpty() returns false if cell is filled else true*/
     }
 
     /*check if user/computer won the game or not
@@ -437,42 +701,56 @@ class ticTacToe : private allMenu
         return true;
     }
 
+    /*This function is for computerTurn. It take argument of 'row' and 'column' and assign the position of a random cell of matrix of Tic-Tac-Toe in the same.*/
+    void easyLevelFunction(short &row, short &column)
+    {
+        easyLevel objEasy(matrix); // creating instance of nested class easyLevel and passing the address of matrix of this object as parameter of constructor because we don't have access to this object in nested function but we need to use the dataMember values (matrix/gamePad) in the nested class.
+        objEasy.whichCellShouldFilled(row, column);
+    }
+
     /*to input 'X' or 'O' from computer in game. On success returns true else false*/
     bool computerTurn()
     {
-        short cellNumber; // to store the cellNumber selected by computer
-        short i, j;       // for row and column of selected cell
+        short row, column; // for row and column of selected cell
 
         /*Three levels of game 1. easy, 2. Medium, 3. Impossible*/
         /************EASY LEVEL*************/
-        /*We will not use any advanced logic here. We will simple use random number b/w 1-9 and fill the cell. */
         if (level == easy)
         {
-            general object;
-            int modifier = 21; // taking any random number (let 21) to modify cellNumber (because randomNumber() changes value every second. But loop may be go in next iteration within a second. If we don't modify the value then we will get same result) //no effect on logic
-            while (true)
-            {
-                cellNumber = (modifier + object.randomNumber()) % 10; //%10 because if a number divided by x then remainder will be from 0 to x-1. And here we need value from 1 to 9
-                /*now we have to interpret the command (cellNumber) to it's proper index to insert the playingCharacter in the matrix/GamePad*/
-                commandInterpreter(cellNumber, i, j);
-                if (isCellEmpty(i, j)) // returns true if cell is empty else false
-                    break;
-                else
-                {
-                    modifier *= 3; // multiplying by random number, let 3
-                    continue;
-                }
-            }
+            easyLevelFunction(row, column);
         }
+        /************MEDIUM LEVEL*************/
         else if (level == medium)
         {
+            if (filledCells >= 3) // because next winning condition only possible if 3 cells are filled (2 by user and 1 by computer because user has started the game.)
+            {
+                mediumLevel objMedium(matrix); // creating instance of nested class mediumLevel and passing the address of matrix of this object as parameter of constructor because we don't have access to this object in nested function but we need to use the dataMember values (matrix/gamePad) in the nested class.
+                /*we are taking temporarily 'i' and 'j' variables because we can't pass the reference of original 'row' & 'column'.
+                 *If we pass the original 'row' and 'column' of this function to 'whichCellShouldFilled' function then if desired position not found,
+                 *then 'row' and 'column' will contains (assigned by) wrong position. So, it's necessary to use temporary variables and if functions returns true then assign them to original 'row' and 'column'.
+                 */
+                short i;                                   // for temporary row
+                short j;                                   // for temporary column
+                if (objMedium.whichCellShouldFilled(i, j)) /*'whichCellShouldFilled() returns true if desired position found else false*/
+                {
+                    row = i;
+                    column = j;
+                }
+                else
+                    easyLevelFunction(row, column);
+            }
+            else
+                easyLevelFunction(row, column);
         }
+        /************IMPOSSIBLE LEVEL*************/
         else // if(level == impossible)
         {
+            cout << "Code not written for impossible level" << endl;
+            return false; // code not written yet
         }
 
         /*============For All Levels==============*/
-        matrix[i][j] = computerChar;
+        matrix[row][column] = computerChar;
         return true;
     }
 
@@ -612,6 +890,8 @@ class ticTacToe : private allMenu
                         break;
                     }
             }
+            else
+                return false; // computer exit the game without completion (written to execute only when codes of medium or impossible level are not completed (temporarily))
             // displayGamePad();
             system("cls"); /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
             cout << "\n\033[38;5;190m********************\033[38;5;201m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
