@@ -10,7 +10,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "D:\\Programming\\Compilers OR Interpreters\\C & C++\\MinGW\\bin\\gcc.exe",
             "cStandard": "c17",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-clang-x64"
