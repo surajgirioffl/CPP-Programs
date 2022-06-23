@@ -262,7 +262,7 @@ class ticTacToe : private allMenu
          */
 
         /**Row-Wise. for 1,2,3*/
-        for (int i = 0; i < 3; i++)
+        for (short i = 0; i < 3; i++) /* i changed from 'int' to 'short' type because of error in Clang++. See COMMENT BLOCK 1220*/
         {
             /*we are checking the empty cell. If any of the cell in current row is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
             if (isCellEmpty(i, 0) || isCellEmpty(i, 1) || isCellEmpty(i, 2))
@@ -271,7 +271,13 @@ class ticTacToe : private allMenu
             {
                 /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
                 short tempCellPosition[] = {i, 0, i, 1, i, 2}; // all 3 cells position one by one respectively
-                for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
+                /*COMMENT BLOCK 1220
+                 *in above line of code 'i' must be short type if compiler is clang++. In G++, it may be int or short no issue.
+                 *If 'i' is of 'int' type then 'Clang++' show error "error: non-constant-expression cannot be narrowed from type 'int' to 'short' in initializer list [-Wc++11-narrowing]"
+                 *clang++ shows error because 'tempCellPosition' is of type 'short' and we are initializing it with 'i' which is of 'int' type and it's a variable not constant and we used to initialize any array etc by literals/constant.
+                 */
+
+                for (int j = 0; j < 6; j++) // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
                     positionOfWinningCells[j] = tempCellPosition[j];
 
                 return true;
@@ -279,7 +285,7 @@ class ticTacToe : private allMenu
         }
 
         /**Column-Wise. for 4,5,6*/
-        for (int i = 0; i < 3; i++)
+        for (short i = 0; i < 3; i++) /* i changed from 'int' to 'short' type because of error in Clang++. See COMMENT BLOCK 1220*/
         {
             /*we are checking the empty cell. If any of the cell in current column is empty then there will no any possibility of winning & we will continue the loop to next iteration.*/
             if (isCellEmpty(0, i) || isCellEmpty(1, i) || isCellEmpty(2, i))
@@ -287,7 +293,7 @@ class ticTacToe : private allMenu
             else if (matrix[0][i] == matrix[1][i] && matrix[1][i] == matrix[2][i]) // it is like "if(a==b && b==c)"
             {
                 /*if above condition satisfied then above 3 cells are winning cells and we need to store it's position for use it later*/
-                short tempCellPosition[] = {0, i, 1, i, 2, i}; // all 3 cells position one by one respectively
+                short tempCellPosition[] = {0, i, 1, i, 2, i}; // all 3 cells position one by one respectively. See COMMENT BLOCK 1220 for details regarding data type should be used during initialization.
                 for (int j = 0; j < 6; j++)                    // condition<6 because total number of cells for winning = 3 and each one have position(x,y). So, total required size = 3x2 = 6
                     positionOfWinningCells[j] = tempCellPosition[j];
 
