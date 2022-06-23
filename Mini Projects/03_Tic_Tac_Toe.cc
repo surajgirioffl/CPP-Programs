@@ -335,6 +335,31 @@ class ticTacToe : private allMenu
              *1) 00,11,22 (logic to use loop for automation: row==column)
              *2) 02,11,20 (logic to use loop for automation: row is increasing by 1 and column is decreasing by 1)
              */
+            /*for diagonal 1*/
+            filledCellsCounter = 0; // reset to filledCellsCounter to 0 to restart
+            for (short i = 0; i < 3; i++)
+                filledCellsCounterFunction(i, i); // counting the filled cells of the diagonal1
+            if (filledCellsCounter == 2)
+            {
+                flag = 0; // reset the flag to 0. It indicates the number of filled cells assigned in respective data members. So, for this diagonal, we have to reset it.
+                for (int i = 0; i < 3; i++)
+                    assignFilledCellsCharacterInDataMember(i, i, row, column); /*assign the filled cell's value in data member 'playingCharacter1' and 'playingCharacter2'*/
+                if (playingCharacter1 == playingCharacter2)                    /*checking the condition for winning of computer or restricting the user to win*/
+                    return true;
+            }
+
+            /*for diagonal 2*/
+            filledCellsCounter = 0; // reset to filledCellsCounter to 0 to restart
+            for (short i = 0, j = 2; i < 3; i++, j--)
+                filledCellsCounterFunction(i, j); // counting the filled cells of the diagonal2
+            if (filledCellsCounter == 2)
+            {
+                flag = 0; // reset the flag to 0. It indicates the number of filled cells assigned in respective data members. So, for this diagonal, we have to reset it.
+                for (short i = 0, j = 2; i < 3; i++, j--)
+                    assignFilledCellsCharacterInDataMember(i, j, row, column); /*assign the filled cell's value in data member 'playingCharacter1' and 'playingCharacter2'*/
+                if (playingCharacter1 == playingCharacter2)                    /*checking the condition for winning of computer or restricting the user to win*/
+                    return true;
+            }
 
             /*if none of above return execute means there is no condition of either winning of user or computer.
              *So, we return false to indicate that don't use passed referenced 'row' & 'column'. Use any other logic to fill the cell (because currently there is no winning situation).
