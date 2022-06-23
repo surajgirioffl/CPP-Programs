@@ -4,6 +4,7 @@
         "ostream": "cpp",
         "ios": "cpp",
         "iostream": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "xlocnum": "cpp"
     }
 }
