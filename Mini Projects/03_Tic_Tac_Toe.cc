@@ -210,7 +210,54 @@ class ticTacToe : private allMenu
          */
 
         // now starting programming for mediumLevel
-        char matrix[3][3]; // gamePad of ticTacToe
+        char matrix[3][3];        // gamePad of ticTacToe
+        short filledCellsCounter; // count the filled cells in current row or column (by default it is 0)
+        char playingCharacter1;   // to store the character filled in filledCell 1
+        char playingCharacter2;   // to store the character filled in filledCell 2
+        short flag = 0;           // flag to indicate no. of playingCharacter stored for checking
+
+        /*Takes arguments of position of cell (row,col) and count the filled cells in matrix/gamePad and assign in data member 'filledCellsCounter'*/
+        void filledCellsCounterFunction(short row, short col)
+        {
+            general generalObj;
+
+            if (generalObj.isCellFilled(row, col, matrix)) // we can't use "parentInstance.isCellFilled(i, j)" because 'parentInstance' is new object containing garbage values. And we need to access the matrix of current object of enclosing class which is not accessible by nested class. So, we have used parametrized constructor.
+                filledCellsCounter++;
+            // else
+            // emptyCellsCounter++; //No need of it. /*we can also use (3-filledCellsCounter) outside this loop to find the number of empty cells*/
+        }
+
+        /**
+         *Take arguments current row and column of loop in i and j respectively. And also take 'rows' and 'columns' by reference which are received from computerTurn() of of current object of enclosing class..
+         *This function will called only if it is confirmed that 2 cells are filled and 1 cell is empty (by default if 2 cells are filled.) in current row/column.
+         *This function assign both filled characters in data member 'playingCharacter1' and 'playingCharacter2' respectively which will be used in calling function to check the winning condition and return condition of calling function.
+         *if empty cell postion received in i,j then this function will assign this position to the referenced 'row' and 'column' which will reflect in computerTurn() of of current object of enclosing class.
+         *Main reason to make this function is to avoid repetition of approx same LOC for rows/columns/diagonals (with little change in position).
+         *It's name is so because .... (see line no.3 of this comment block)
+         */
+        void assignFilledCellsCharacterInDataMember(short i, short j, short &row, short &column)
+        {
+            general generalObj; /*creating instance of the class 'general'*/
+
+            /*now we have to store 2 characters of 2 filledCell in two variable declared above (playingCharacter1 & playingCharacter2). But in one iteration, we have to store only one character. So, we use flag to indicate iteration & perform the desired operation*/
+            if (generalObj.isCellFilled(i, j, matrix))
+            {
+                if (flag == 0)
+                {
+                    playingCharacter1 = matrix[i][j];
+                    flag++;
+                }
+                else if (flag == 1) // after storing one I have stores the 2nd playingCharacter
+                    playingCharacter2 = matrix[i][j];
+            }
+            else if (matrix[i][j] == ' ') // empty. means if both filled cell have same playingCharacter then we have to send position of this blank cell.
+            {
+                /*we have to pass position of cell to fill (empty) via reference received in row, column*/
+                row = i;
+                column = j;
+                /*there is no use of above 2 lines of assigning if playingCharacter1!=playingCharacter2*/
+            }
+        }
 
     public:
         /*take arguments of row and column and assign the desired position in passed row and column. Returns true if winning of computer/restricting of user condition found else false.
@@ -219,42 +266,29 @@ class ticTacToe : private allMenu
          */
         bool whichCellShouldFilled(short &row, short &column)
         {
-            general generalObj; /*creating the instance of the class 'general'*/
-
             /*for rows (in first iteration) and column (in 2nd iteration). */
             short forIteration = 0;                              /*for counting the iteration in while loop*/
             for (forIteration; forIteration < 2; forIteration++) /* forIteration=0 for rows (3 rows) and forIteration=1 for columns (3 columns)*/
             {
                 /*I am trying to perform both rows and columns operations in a loop because cells index reversed in column in comparision to rows and vice versa).
                  *In 'isWonTheGame()' function I have written the code of rows and columns separately. You can see it.
-                 *But we can automate it in loop because only index are reversing and our lines of code become half. Edit: I have tried it below. LOC decreases but not as expected.
-                 *We have to use conditional for rows and column with separate code
+                 *But we can automate it in loop because only index are reversing and our lines of code become half. Edit: I have tried it below. LOC decreases drastically.¯\_(ツ)_/¯
+                 *We have to use conditional for rows and column and call the same function with reversed row and column index from each other.
                  */
                 for (short i = 0; i < 3; i++)
                 {
-                    short filledCellsCounter = 0; // count the filled cells in current row or column
-                    short emptyCellsCounter = 0;  // count the filled cells in current row or column
+                    filledCellsCounter = 0; // assigning 0 in each new row or column
                     for (short j = 0; j < 3; j++)
                     {
                         /*for rows*/
                         if (forIteration == 0) /*Means for rows*/
-                        {
-                            if (generalObj.isCellFilled(i, j, matrix)) // we can't use "parentInstance.isCellFilled(i, j)" because 'parentInstance' is new object containing garbage values. And we need to access the matrix of current object of enclosing class which is not accessible by nested class. So, we have used parametrized constructor.
-                                filledCellsCounter++;
-                            else
-                                emptyCellsCounter++; /*we can also use (3-filledCellsCounter) outside this loop to find the number of empty cells*/
-                        }
+                            filledCellsCounterFunction(i, j);
                         /*for columns*/
-                        else // if (forIteration == 1) /*Means for column*/
-                        {
-                            if (generalObj.isCellFilled(j, i, matrix)) // reversed for column
-                                filledCellsCounter++;
-                            else
-                                emptyCellsCounter++;
-                        }
-                    } /*end of inner for loop*/
+                        else /* if (forIteration == 1)*/      /*Means for column*/
+                            filledCellsCounterFunction(j, i); // reversed for column
+                    }                                         /*end of inner for loop*/
 
-                    if (filledCellsCounter == 2) /*possibility of winning if both filled cell have same playingCharacter*/
+                    if (filledCellsCounter == 2) /*2 cells must be filled for winning possibility. Confirmation of winning only if both filled cell have same playingCharacter*/
                     {
                         /*-----------------FOR ROWS AND COLUMNS----------------------*/
                         /*
@@ -263,9 +297,7 @@ class ticTacToe : private allMenu
                          *both filled cell may contains 'X'(next winning condition of player having 'X') OR 'O'(next winning condition of player having 'O') OR both (no winning condition)
                          */
 
-                        char playingCharacter1; // to store the character filled in filledCell 1
-                        char playingCharacter2; // to store the character filled in filledCell 2
-                        short flag = 0;         // flag to indicate no. of playingCharacter stored for checking
+                        flag = 0; // reset to zero for every new row/column
 
                         if (forIteration == 0) /****** for rows*******/
                         {
@@ -275,26 +307,9 @@ class ticTacToe : private allMenu
                                 /*COMMENT BLOCK 1201
                                  *In this situation, we have 3 cells in 2 cells are filled and 1 cell is empty
                                  *if both filled cells have same playingCharacter (any one of 'X' and 'O')
-                                 *then we have to return the postion of empty cell to fill and win the game (if playingCharacter is of computer) or restrict winning the user (if playingCharacter is of user).
+                                 *then we have to return the postion of empty cell to fill and win/restrict the game (if playingCharacter is of computer) or restrict winning the user (if playingCharacter is of user).
                                  */
-                                /*now we have to store 2 characters of 2 filledCell in two variable declared above. But in one iteration, we have to store only one character. So, we use flag to indicate iteration & perform the desired operation*/
-                                if (generalObj.isCellFilled(i, j, matrix))
-                                {
-                                    if (flag == 0)
-                                    {
-                                        playingCharacter1 = matrix[i][j];
-                                        flag++;
-                                    }
-                                    else if (flag == 1) // after storing one I have stores the 2nd playingCharacter
-                                        playingCharacter2 = matrix[i][j];
-                                }
-                                else if (matrix[i][j] == ' ') // empty. means if both filled cell have same playingCharacter then we have to send position of this blank cell.
-                                {
-                                    /*we have to pass position of cell to fill (empty) via reference received in row, column*/
-                                    row = i;
-                                    column = j;
-                                    /*there is no use of above 2 lines of assigning if playingCharacter1!=playingCharacter2*/
-                                }
+                                assignFilledCellsCharacterInDataMember(i, j, row, column);
                             }
                         }
                         else // if(forIteration==1)/*****for columns******/
@@ -303,24 +318,7 @@ class ticTacToe : private allMenu
                             for (short j = 0; j < 3; j++)
                             {
                                 /*see above comment -> COMMENT BLOCK 1201*/
-                                /*now we have to store 2 characters of 2 filledCell in two variable declared above. But in one iteration, we have to store only one character. So, we use flag to indicate iteration & perform the desired operation*/
-                                if (generalObj.isCellFilled(j, i, matrix))
-                                {
-                                    if (flag == 0)
-                                    {
-                                        playingCharacter1 = matrix[j][i];
-                                        flag++;
-                                    }
-                                    else if (flag == 1) // after storing one I have stores the 2nd playingCharacter
-                                        playingCharacter2 = matrix[j][i];
-                                }
-                                else if (matrix[j][i] == ' ') // empty. means if both filled cell have same playingCharacter then we have to send position of this blank cell.
-                                {
-                                    /*we have to pass position of cell to fill (empty) via reference received in row, column*/
-                                    row = j;
-                                    column = i;
-                                    /*there is no use of above 2 lines of assigning if playingCharacter1!=playingCharacter2*/
-                                }
+                                assignFilledCellsCharacterInDataMember(j, i, row, column); // reversed for column
                             }
                         }
 
@@ -352,6 +350,7 @@ class ticTacToe : private allMenu
                 for (int j = 0; j < 3; j++)
                     this->matrix[i][j] = matrix[i][j];
             }
+            filledCellsCounter = 0; // assigning by default value of filled cells i.e., 0
         }
 
         /*destructor*/
@@ -603,8 +602,7 @@ class ticTacToe : private allMenu
     }
 
     /*when user input command 1...9 to select a cell then this function will take that cellNumber (number from 1-9) and give the real postion of the cell by giving row index in 'i' and column index in 'j'*/
-    void
-    commandInterpreter(short cellNumber, short &i, short &j)
+    void commandInterpreter(short cellNumber, short &i, short &j)
     {
         switch (cellNumber)
         {
