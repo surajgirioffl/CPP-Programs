@@ -5,6 +5,7 @@
         "ios": "cpp",
         "iostream": "cpp",
         "iosfwd": "cpp",
-        "xlocnum": "cpp"
+        "xlocnum": "cpp",
+        "random": "cpp"
     }
 }
