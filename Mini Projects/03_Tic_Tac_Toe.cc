@@ -90,6 +90,7 @@ public:
         cout << "\033[38;5;82m=> Press '1' for Easy Level." << endl;
         cout << "=> Press '2' for Medium Level." << endl;
         cout << "=> Press '3' for Impossible Level." << endl;
+        cout << "=> Press 'enter' for default level (easy)." << endl;
         cout << "=> Press '#' for exit game." << endl;
         cout << "=> Press '@' for clear the display.\033[0m" << endl;
         cout << "\033[38;5;123mWrite your choice:\033[0m" << endl;
@@ -112,7 +113,9 @@ public:
             short choiceInInt = choice - 48; // converting character to integer using ASCII
             if (choiceInInt >= 1 && choiceInInt <= 3)
                 return choiceInInt;
-            else if (choice == '\n' || choice == '@')
+            else if (choice == '\n') // if user press enter for by default level and it's is easy level
+                return 1;            // by default easy level which is 1
+            else if (choice == '@')
             {
                 system("cls");
                 welcomeMenu(); // because this is 2nd menu after welcome menu. So, welcome menu should be visible along with it.
@@ -161,7 +164,7 @@ class ticTacToe : private allMenu
             cout << "\033[38;5;225m\nSelect your playing character." << endl;
             cout << "\033[38;5;214m=> Press '1' for 'X' " << endl;
             cout << "=> Press '2' for 'O' " << endl;
-            cout << "=> Press 'enter' for default.\033[0m" << endl;
+            cout << "=> Press 'enter' for default ('X').\033[0m" << endl;
             char choice;
             cout << "$ ";
             fflush(stdin); // flushing the standard input stream's buffer
