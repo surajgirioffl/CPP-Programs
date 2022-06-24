@@ -877,7 +877,7 @@ class ticTacToe : private allMenu
                     {
                         system("cls"); // clear the display
                         displayGamePad(true);
-                        cout << "\n-_-_-_-_-_-_-_-_-_-_-_-_CONGRATULATION, YOU WON THE GAME-_-_-_-_-_-_-_-_-_-_-_-_" << endl;
+                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
                         break;
                     }
@@ -908,7 +908,7 @@ class ticTacToe : private allMenu
                     {
                         system("cls");
                         displayGamePad(true);
-                        cout << "COMPUTER WON THE GAME." << endl;
+                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
                         break;
                     }
@@ -921,7 +921,7 @@ class ticTacToe : private allMenu
                  << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*****************\033[0m" << endl;
         }             /*end of while*/
         if (!wonFlag) // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
-            cout << "No one won the game. **DRAW**" << endl;
+            cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201mDRAW!\033[38;5;129m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
         return true;
     }
 
