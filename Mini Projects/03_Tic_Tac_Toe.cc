@@ -108,7 +108,7 @@ public:
     void gameLevelMenuBlock(int userSelectedDefaultGameLevel)
     {
         cout << "\033[1;34m===============GAME LEVEL MENU================\033[0m" << endl;
-        cout << "\033[38;5;82m=> Press '1' for Easy Level." << endl;
+        cout << "\033[38;5;82;3m=> Press '1' for Easy Level." << endl;
         cout << "=> Press '2' for Medium Level." << endl;
         cout << "=> Press '3' for Impossible Level." << endl;
 
@@ -150,11 +150,11 @@ public:
                 userSelectedDefaultGameLevel = choiceInInt;
 
                 if (userSelectedDefaultGameLevel == 1)
-                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                    cout << "\033[1;3;32mNice, EASY Level Selected......" << endl;
                 else if (userSelectedDefaultGameLevel == 2)
-                    cout << "\033[1;9;32mWow, MEDIUM Level Selected......" << endl;
+                    cout << "\033[1;3;32mWow, MEDIUM Level Selected......" << endl;
                 else
-                    cout << "\033[1;9;32mGreat, IMPOSSIBLE Level Selected......" << endl;
+                    cout << "\033[1;3;32mGreat, IMPOSSIBLE Level Selected......" << endl;
 
                 return choiceInInt;
             }
@@ -162,16 +162,16 @@ public:
             {
                 if (userSelectedDefaultGameLevel == 0)
                 {
-                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                    cout << "\033[1;3;32mNice, EASY Level Selected......" << endl;
                     return 1; // for easy
                 }
 
                 if (userSelectedDefaultGameLevel == 1)
-                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                    cout << "\033[1;3;32mNice, EASY Level Selected......" << endl;
                 else if (userSelectedDefaultGameLevel == 2)
-                    cout << "\033[1;9;32mWow, MEDIUM Level Selected......" << endl;
+                    cout << "\033[1;3;32mWow, MEDIUM Level Selected......" << endl;
                 else
-                    cout << "\033[1;9;32mGreat, IMPOSSIBLE Level Selected......" << endl;
+                    cout << "\033[1;3;32mGreat, IMPOSSIBLE Level Selected......" << endl;
 
                 return userSelectedDefaultGameLevel; // by default easy level which is 1
             }
@@ -719,7 +719,7 @@ class ticTacToe : private allMenu
         short tempCellNumber; // store cell number in integer (by subtracting 48 from character)
         while (true)
         {
-            cout << "\033[38;5;51m\nWrite you cell choice: \033[38;5;99m(Press '#' to exit & '@' to clear the screen.)\033[0m" << endl;
+            cout << "\033[38;5;51;3m\nWrite you cell choice: \033[38;5;99m(Press '#' to exit & '@' to clear the screen.)\033[0m" << endl;
             cout << "$ ";
             fflush(stdin);
             cellNumber = cin.get();
