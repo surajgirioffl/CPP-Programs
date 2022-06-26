@@ -1091,7 +1091,7 @@ class ticTacToe : private allMenu
                     {
                         system("cls"); // clear the display
                         displayGamePad(true);
-                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
+                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
                         break;
                     }
@@ -1122,7 +1122,7 @@ class ticTacToe : private allMenu
                     {
                         system("cls");
                         displayGamePad(true);
-                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
                         break;
                     }
@@ -1135,7 +1135,7 @@ class ticTacToe : private allMenu
                  << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*****************\033[0m" << endl;
         }             /*end of while*/
         if (!wonFlag) // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
-            cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201mDRAW!\033[38;5;129m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+            cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
         return true;
     }
 
