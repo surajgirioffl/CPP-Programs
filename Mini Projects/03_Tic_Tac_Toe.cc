@@ -26,6 +26,7 @@
 #include <time.h>
 #include <stdlib.h>
 using namespace std;
+int numberOfTimesGamePlayed; /*Global variable to count the number of times game played by user in the current session*/
 class general
 {
 public:
@@ -1171,6 +1172,7 @@ int main()
 {
     while (true)
     {
+        numberOfTimesGamePlayed++; // increasing the counter which stores the number of times the game was played
         system("cls");
         {
             /*using block because after returning of control then object will be destroyed by destructor*/
