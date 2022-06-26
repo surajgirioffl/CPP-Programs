@@ -54,6 +54,7 @@ public:
 
 class allMenu
 {
+    // static int userSelectedDefaultGameLevel;//we can't use static int as data member of class
 public:
     /*welcome menu*/
     void welcomeMenu()
@@ -102,13 +103,23 @@ public:
         }
     }
 
-    void gameLevelMenuBlock()
+    /*take argument of of last selected game level of user (if first then by default 0) and display the menu on the basis of that level*/
+    void gameLevelMenuBlock(int userSelectedDefaultGameLevel)
     {
         cout << "\033[1;34m===============GAME LEVEL MENU================\033[0m" << endl;
         cout << "\033[38;5;82m=> Press '1' for Easy Level." << endl;
         cout << "=> Press '2' for Medium Level." << endl;
         cout << "=> Press '3' for Impossible Level." << endl;
-        cout << "=> Press 'enter' for default level (easy)." << endl;
+
+        if (userSelectedDefaultGameLevel == 0) // by default static int is 0 and when user selected once 1 for easy then userSelectedDefaultGameLevel will become 1. If user has selected by default from beginning then it will not change and still 0. So, I have used 0 & 1 in OR in condition of if().
+            cout << "=> Press 'enter' for default level (easy)." << endl;
+        else if (userSelectedDefaultGameLevel == 1)
+            cout << "=> Press 'enter' for your last selected level (EASY)." << endl;
+        else if (userSelectedDefaultGameLevel == 2)
+            cout << "=> Press 'enter' for your last selected level (MEDIUM)." << endl;
+        else // for gameLevel==3 for impossibleLevel
+            cout << "=> Press 'enter' for your last selected level (IMPOSSIBLE)." << endl;
+
         cout << "=> Press '#' for exit game." << endl;
         cout << "=> Press '@' for clear the display.\033[0m" << endl;
         cout << "\033[38;5;123mWrite your choice:\033[0m" << endl;
@@ -120,19 +131,49 @@ public:
     // }
 
     /*Menu to ask user for level of game he/she wants to play. returns the selected level (1-easy,2-medium,3-impossible) and returns -1 if user exits the game*/
-    short gameLevelMenu()
+    short
+    gameLevelMenu()
     {
         while (true)
         {
-            gameLevelMenuBlock();
+            /*we have to stores the current session selectedLevel of user. So, that from next game of current session user don't need to retype the option to select level. My aim is to provide feature to press enter and select the last selected level. It only possible via static variable or global var.*/
+            static int userSelectedDefaultGameLevel; /*To store the last selected game level of user in current session. So, whenever user press enter then last selected game level will be selected*/
+            gameLevelMenuBlock(userSelectedDefaultGameLevel);
+
             cout << "$ ";
             fflush(stdin); // flushing the standard input stream's buffer
             char choice = cin.get();
             short choiceInInt = choice - 48; // converting character to integer using ASCII
             if (choiceInInt >= 1 && choiceInInt <= 3)
+            {
+                userSelectedDefaultGameLevel = choiceInInt;
+
+                if (userSelectedDefaultGameLevel == 1)
+                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                else if (userSelectedDefaultGameLevel == 2)
+                    cout << "\033[1;9;32mWow, MEDIUM Level Selected......" << endl;
+                else
+                    cout << "\033[1;9;32mGreat, IMPOSSIBLE Level Selected......" << endl;
+
                 return choiceInInt;
-            else if (choice == '\n') // if user press enter for by default level and it's is easy level
-                return 1;            // by default easy level which is 1
+            }
+            else if (choice == '\n') // if user press enter for by default level and it's is easy level in beginning or previous selected level of current user session.
+            {
+                if (userSelectedDefaultGameLevel == 0)
+                {
+                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                    return 1; // for easy
+                }
+
+                if (userSelectedDefaultGameLevel == 1)
+                    cout << "\033[1;9;32mNice, EASY Level Selected......" << endl;
+                else if (userSelectedDefaultGameLevel == 2)
+                    cout << "\033[1;9;32mWow, MEDIUM Level Selected......" << endl;
+                else
+                    cout << "\033[1;9;32mGreat, IMPOSSIBLE Level Selected......" << endl;
+
+                return userSelectedDefaultGameLevel; // by default easy level which is 1
+            }
             else if (choice == '@')
             {
                 system("cls");
