@@ -731,6 +731,26 @@ class ticTacToe : private allMenu
         objEasy.whichCellShouldFilled(row, column);
     }
 
+    bool fillAnyCornerOfMatrix(short &row, short &column)
+    {
+        /*we can use loop to automate the working for above 4 cell checking (1,3,7,9)*/
+        for (short i = 0; i < 2; i++)
+        {
+            short j = 0;
+            while (j <= 2)
+            {
+                if (isCellEmpty(i, j))
+                {
+                    row = i;
+                    column = j;
+                    return true;
+                }
+                j += 2; /*because we need only 0 and 2 in column*/
+            }
+        }
+        return false;
+    }
+
     /*to input 'X' or 'O' from computer in game. On success returns true else false*/
     bool computerTurn()
     {
@@ -768,8 +788,46 @@ class ticTacToe : private allMenu
         /************IMPOSSIBLE LEVEL*************/
         else // if(level == impossible)
         {
-            cout << "Code not written for impossible level" << endl;
-            return false; // code not written yet
+            // cout << "Code not written for impossible level" << endl;
+            // return false; // code not written yet
+
+            mediumLevel objMedium(matrix);
+            bool isComputerVShapedPossible = false;
+
+            if (filledCells < 3)
+            {
+                if (matrix[1][1] == userChar)
+                {
+                    fillAnyCornerOfMatrix(row, column);
+                    /*it is guaranteed that above called function returns true because
+                     *this block can only execute if filledCells<3 and
+                     * if it is so then in worst scenario also 2 corners will be empty and it satisfy our requirements.
+                     */
+                }
+                else
+                {
+                    /*if user has not filled the mid cell (1,1) then user will not able to create V shape in this game.
+                     *And if V shaped not created then two winning conditions will never form. And user will never win the game.
+                     *So, we are taking this opportunity to make computer char at mid position (1,1) and write the logic to make V shaped by computer and making computer to win the game.
+                     */
+                    row = 1;
+                    column = 1;
+                    isComputerVShapedPossible = true;
+                }
+            }
+            else if (!objMedium.whichCellShouldFilled(row, column)) // it returns false when no winning condition found else true if winning condition found and also make correct position of row & column to win computer or restrict user.
+            {
+                // if (isComputerVShapedPossible) /*to make computer to win the game because computerChar is at mid position (1,1)*/;
+
+                //     tryToMakeVShapeForComputer(row, column);
+                // else
+                if (fillAnyCornerOfMatrix(row, column)) /*to restrict user to win the game because userChar is at mid position (1,1)*/
+                {
+                    /*no need to write any code here. because row and column is already modified in 'fillCornerOfMatrix' function and in last 2nd line of this function the same is assign to the matrix.*/
+                }
+                else
+                    easyLevelFunction(row, column);
+            }
         }
 
         /*============For All Levels==============*/
