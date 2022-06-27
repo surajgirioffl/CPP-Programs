@@ -51,6 +51,33 @@ public:
     {
         return !isCellEmpty(row, col, matrix); /*isCellEmpty() returns false if cell is filled else true*/
     }
+
+    /**
+     *Take arguments of desired element which need to be searched in the series (exist or not) && first 3 elements of series(SumSeries) to get the logic for series traversal till desired position.
+     * && range of elements till which you want to find your desiredElement (by default it is 100 means only till 100th element of series, your desired element will be searched).
+     * returns true if element found in series in provided/default range else false.
+     * e.g. of using this function:
+     * Let a series 2,5,8..... and we have to check 21 is present in this series or not.
+     */
+    bool isInSumSeriesOfIt(int elementToBeCheckInThisSeries, int element1, int element2, int element3, short range = 100)
+    {
+        bool correctSeries = false; /*If series received in argument is correct series of sum then it will become true else false*/
+        short difference = element2 - element1;
+        if (difference == element3 - element2) /*if received sequence is correct then it will process to next*/
+            correctSeries = true;
+
+        int currentElement = element1;
+        short i = 0;
+        while (correctSeries)
+        {
+            if (currentElement == elementToBeCheckInThisSeries)
+                return true;
+            currentElement += difference; /*incrementing to next element of the series*/
+            if (++i == range)             /*if desiredElement doesn't found then the loop of series break after the provided range of checking (by default it is till 100th element of the series).*/
+                break;
+        }
+        return false; /*if series is not correct OR desiredElement doesn't found in default/provided range.*/
+    }
 };
 
 class allMenu
@@ -951,6 +978,43 @@ class ticTacToe : private allMenu
         }
     }
 
+    /*returns random corner cellNumber on the basis number of times user played the game in current session. It does't check cell is filled or empty.
+     *returns 1,7,3,9 on newGameNumber 1,2,3,4 respectively and repeat the same result till next 4 newGame.
+     *If this function get called multiple times in same game then the same cellNumber will be returned.
+     *See comment block "COMMENT BLOCK 4432" for more info.....
+     */
+    short randomCornerNumber()
+    {
+        general generalObj;
+        if (generalObj.isInSumSeriesOfIt(numberOfTimesGamePlayed, 1, 5, 9))
+            return 1;
+        else if (generalObj.isInSumSeriesOfIt(numberOfTimesGamePlayed, 2, 6, 10))
+            return 7;
+        else if (generalObj.isInSumSeriesOfIt(numberOfTimesGamePlayed, 3, 7, 11))
+            return 3;
+        else if (generalObj.isInSumSeriesOfIt(numberOfTimesGamePlayed, 4, 8, 12))
+            return 9;
+
+        /*QUESTION: why 1,5,9 or 2,6,10 or 3,7,11 or 4,8,12 in above LOC of this function ?
+         *Because we have only 4 corners i.e., 1,3,7,9 but user can play the game any number of times in current session.
+         *And we have to send different corner cellNumber in starting of each new game in current session for better user experience. See "COMMENT BLOCK 4432" to know more about the same.
+         *So, we have to repeat the return value from every 5th new game.
+         *So, I have used the below logic to send different corner cellNumber in every new game. (repetition from every fifth new game)
+         *new game 1 -> corner cell 1
+         *new game 2 -> corner cell 7
+         *new game 3 -> corner cell 3
+         *new game 4 -> corner cell 9
+         *new game 5 -> repetition as like newGame 1 again and so on........
+         *As per repetition logic, the same cornerCell will be repeat on every 5th newGame.
+         *So, 5th new game from current game = currentGameNumber + 4 = numberOfTimesGamePlayed + 4.
+         *So, on above discussed basis,
+         *cornerNumber 1 will be returned in game number 1,5(1+4),9(5+4),13(9+4) and so on...
+         *cornerNumber 7 will be returned in game number 2,6(2+4),10(6+4),14(10+4) and so on...
+         *cornerNumber 3 will be returned in game number 3,7(3+4),11(7+4),15(11+4) and so on...
+         *cornerNumber 9 will be returned in game number 4,8(4+4),12(8+4),16(12+4) and so on...
+         */
+    }
+
     /*this function is used in Impossible level to restrict user to win the game.
      *If user already filled the mid position of matrix (1,1) then we need to fill corner as soon as possible to restrict the user to win.
      *There are four corners are in matrix.
@@ -964,6 +1028,27 @@ class ticTacToe : private allMenu
      */
     bool fillAnyCornerOfMatrix(short &row, short &column)
     {
+
+        /*Edit..........Start*/
+        /**WHY THIS EDIT REQUIRED: COMMENT BLOCK 4432
+         *Actually it's coded for better user experience if user play the game multiple times in the same session and selected the impossibleLevel.
+         *Actually what was happening that, when user selected the cell(1,1) i.e., mid-mid cell in impossibleLevel then computer fills always the corner(0,0) as per the program in below for loop block.
+         *The repetition of same cell filled by computer makes the game a little rubbish.
+         *If we fill random corner cell i.e., any of cell 1,3,7 and 9 then there will no any effect on the restricting logic of impossibleLevel.
+         *Then why not, write a new function or modify the function fillAnyCornerOfMatrix() to fill the random corner cell in at least starting of a new game by user in current session.
+         *So, I have defined a function randomCornerNumber() which returns random corner cell on the basis number of times user played the game in current session.
+         *this function is only for first time corner filling in every new game in current session. If called multiple time in same game then same cellNumber will return. and we have called it in every call of below function.
+         */
+        /*we have to use any logic to restrict execution of below 4 LOC after 1st call of this function because from 2nd call the randomCornerNumber() function returns same cell number and it will already filled and then we have to go to for() loop block to fill the corner which is empty.
+         *It will increase the time complexity without any need. We have to restrict it by any good logic.
+         */
+        short corner = randomCornerNumber(); /*It will return same cellNumber if called more that once in same game. So, below 4 lines are useful only in first call of fillAnyCornerOfMatrix() in new game.*/
+        commandInterpreter(corner, row, column);
+        if (isCellEmpty(row, column))
+            return true;
+        /*Edit......End*/
+        /*if returned cell by randomCornerNumber() is not empty means from the 2nd call of current function the below code will execute every times till end of the current game of this session*/
+
         /*we can use loop to automate the working for above 4 cell checking (1,3,7,9)*/
         for (short i = 0; i < 2; i++)
         {
