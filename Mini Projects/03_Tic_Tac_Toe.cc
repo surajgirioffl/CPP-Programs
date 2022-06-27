@@ -257,6 +257,8 @@ class ticTacToe : private allMenu
         char playingCharacter1;   // to store the character filled in filledCell 1
         char playingCharacter2;   // to store the character filled in filledCell 2
         short flag = 0;           // flag to indicate no. of playingCharacter stored for checking
+        char userChar;            // to store the playing character selected by user (any of 'X' Or 'O')
+        char computerChar;        // to store the playing character filled by computer (any of 'X' Or 'O')
 
         /*Takes arguments of position of cell (row,col) and count the filled cells in matrix/gamePad and assign in data member 'filledCellsCounter'*/
         void filledCellsCounterFunction(short row, short col)
@@ -302,12 +304,160 @@ class ticTacToe : private allMenu
         }
 
     public:
+        /***WHY THIS FUNCTION ?. COMMENT BLOCK 2122
+         *This function is a copy (with some enhancement) of the function 'whichCellShouldFilled()' of 'mediumLevel' class.
+         *Only little changes have been added in it for checking the winning condition of solemnly for computer only.
+         *Initially, The function 'whichCellShouldFilled()' is used to restrict the user to win and also used to make computer to won the game.
+         *But there was a huge limitation of that function (whichCellShouldFilled()) which are following:
+         *1) It checks the condition winning the computer or restricting the user in sequence.
+         *   The sequence is: It checks rows first (top to down) -> then column (left to right) -> then diagonals (1 then 2).
+         *2) It returns the function after selecting the empty cell of that row/column/diagonal which comes first in sequence and satisfies the conditions (2 cells must be filled with same playingCharacter (either 'X' or 'O') and the rest 1 cell should be empty.).
+         *The cause of limitation is that the function returns whenever any line line (row, column,diagonal) encounters in the pre-programmed sequence satisfying the condition.
+         *Below is the effect (on game) of this 'sequenced checking and returning of the function':
+         **Such condition created in which user has done some mistake or two winning condition of computer created.
+         * -> Let 3 cells are filled by user and 2 cells are filled by computer. See below (Let use playingChar is 'X'):
+         *    X | X |  |
+                | X |  |
+              O | O |  |
+         *Above is the situation,, and now it's computer turn to fill.
+         *As per the function 'whichCellShouldFilled()'. the control started checking in sequence and whenever first row checks then it satisfies the condition (2 cells should be filled with same playingCharacter (either 'X' or 'O')).
+         *So, control will return by selecting the cell(0,2) to fill.
+         *But this is the main problem, it's chance to fill the cell (0,2) and win the game by computer.
+         *But due to in sequence and return of function the control hadn't reached in that row.
+
+         **So, main problem is that, that function primarily focusing on restricting the user to win (if computer winning condition satisfies in sequence before restricting the user then only computer winning preferred else user restriction are more prioritized.)
+         *But we must need to check the winning possibility of computer before restricting the user. If computer winning possible then that cell will be filled and computer will win the game and user will not receive any change to fill in next turn and win.
+         *So, it is compulsory to check the winning possibility of computer before restricting the user.
+         **This problem is with all level either easy,  medium or hard. In easy level also, computer can win the match due to user mistake but computer don't fill the required cell. In medium level also, when sometimes, user restriction condition satisfied and in next computer condition is also satisfied.
+         * Then also due to sequence, the user restriction was used to preferred instead making computer win. It's make the game worst.
+         *
+         * ********ADVANTAGES OF THIS FUNCTION********
+         * It will called to check the possibility of winning by computer if computer can win from current fill then it will select the required row and column to make computer win.
+         * It will called before the function 'whichCellShouldFilled()' which restrict user from winning (if one row/column/diagonal) are making user win in next fill. But this function called before the same and check the winning condition for computer. If computer can win then no issue it will make computer win.
+         * One of the main advantage of this function is that it is independent and only work to make computer win if simple winning condition satisfied. It doesn't implement any logic to restrict user. So, It can also be used in easyLevel(No logic to restrict user) and if user has done any mistake and computer can win by next filling.
+         * And it can also be used before restricting the user in mediumLevel as well as impossibleLevel to make computer win if possible.
+         * -----------------------------------------
+         * take arguments of row and column and assign the desired position in passed row and column by reference. Returns true if winning of computer condition found else false.
+         * If returns true means winning of computer condition found and row,column contains desired position of cell to fill.
+         * If false returns then passed row and column doesn't contains desired position of cell to fill. And to fill this you have to use any logic like to restrict the user if possible or fill by some powerful logic to defeat user badly.😂
+         */
+        bool whichCellShouldFilledToMakeComputerWin(short &row, short &column)
+        {
+            /*for rows (in first iteration) and column (in 2nd iteration). */
+            short forIteration = 0;                              /*for counting the iteration in while loop*/
+            for (forIteration; forIteration < 2; forIteration++) /* forIteration=0 for rows (3 rows) and forIteration=1 for columns (3 columns)*/
+            {
+                /*I am trying to perform both rows and columns operations in a loop because cells index reversed in column in comparision to rows and vice versa).
+                 *In 'isWonTheGame()' function I have written the code of rows and columns separately. You can see it.
+                 *But we can automate it in loop because only index are reversing and our lines of code become half. Edit: I have tried it below. LOC decreases drastically.¯\_(ツ)_/¯
+                 *We have to use conditional for rows and column and call the same function with reversed row and column index from each other.
+                 */
+                for (short i = 0; i < 3; i++)
+                {
+                    filledCellsCounter = 0; // assigning 0 in each new row or column
+                    for (short j = 0; j < 3; j++)
+                    {
+                        /*for rows*/
+                        if (forIteration == 0) /*Means for rows*/
+                            filledCellsCounterFunction(i, j);
+                        /*for columns*/
+                        else /* if (forIteration == 1)*/      /*Means for column*/
+                            filledCellsCounterFunction(j, i); // reversed for column
+                    }                                         /*end of inner for loop*/
+
+                    if (filledCellsCounter == 2) /*2 cells must be filled for winning possibility. Confirmation of winning only if both filled cell have same playingCharacter*/
+                    {
+                        /*-----------------FOR ROWS AND COLUMNS----------------------*/
+                        /*
+                         *in current line (row/column),
+                         *one cell will definitely empty (contains space).
+                         *both filled cell may contains 'X'(next winning condition of player having 'X') OR 'O'(next winning condition of player having 'O') OR both (no winning condition)
+                         */
+
+                        flag = 0; // reset to zero for every new row/column
+
+                        if (forIteration == 0) /****** for rows*******/
+                        {
+                            /*we have to access all cells of current row again to check what's filled in it.*/
+                            for (short j = 0; j < 3; j++)
+                            {
+                                /*COMMENT BLOCK 1201
+                                 *In this situation, we have 3 cells in 2 cells are filled and 1 cell is empty
+                                 *if both filled cells have same playingCharacter (any one of 'X' and 'O')
+                                 *then we have to return the postion of empty cell to fill and win/restrict the game (if playingCharacter is of computer) or restrict winning the user (if playingCharacter is of user).
+                                 */
+                                assignFilledCellsCharacterInDataMember(i, j, row, column);
+                            }
+                        }
+                        else // if(forIteration==1)/*****for columns******/
+                        {
+                            /*we have to access all cells of current column again to check what's filled in it.*/
+                            for (short j = 0; j < 3; j++)
+                            {
+                                /*see above comment -> COMMENT BLOCK 1201*/
+                                assignFilledCellsCharacterInDataMember(j, i, row, column); // reversed for column
+                            }
+                        }
+
+                        if (playingCharacter1 == playingCharacter2 && playingCharacter2 == computerChar) // if both playingCharacter are same then it is winning condition and 'row' and 'column' contains the desired position.
+                            return true;
+                    }
+                    else
+                        continue; /*for next row/column*/
+                }                 /*end of 1st for loop*/
+            }                     /*end of outer most for loop*/
+
+            /*-----------------FOR DIAGONALS----------------------*/
+            /*
+             *1) 00,11,22 (logic to use loop for automation: row==column)
+             *2) 02,11,20 (logic to use loop for automation: row is increasing by 1 and column is decreasing by 1)
+             */
+            /*for diagonal 1*/
+            filledCellsCounter = 0; // reset to filledCellsCounter to 0 to restart
+            for (short i = 0; i < 3; i++)
+                filledCellsCounterFunction(i, i); // counting the filled cells of the diagonal1
+            if (filledCellsCounter == 2)
+            {
+                flag = 0; // reset the flag to 0. It indicates the number of filled cells assigned in respective data members. So, for this diagonal, we have to reset it.
+                for (int i = 0; i < 3; i++)
+                    assignFilledCellsCharacterInDataMember(i, i, row, column);                   /*assign the filled cell's value in data member 'playingCharacter1' and 'playingCharacter2'*/
+                if (playingCharacter1 == playingCharacter2 && playingCharacter2 == computerChar) /*checking the condition for winning of computer or restricting the user to win*/
+                    return true;
+            }
+
+            /*for diagonal 2*/
+            filledCellsCounter = 0; // reset to filledCellsCounter to 0 to restart
+            for (short i = 0, j = 2; i < 3; i++, j--)
+                filledCellsCounterFunction(i, j); // counting the filled cells of the diagonal2
+            if (filledCellsCounter == 2)
+            {
+                flag = 0; // reset the flag to 0. It indicates the number of filled cells assigned in respective data members. So, for this diagonal, we have to reset it.
+                for (short i = 0, j = 2; i < 3; i++, j--)
+                    assignFilledCellsCharacterInDataMember(i, j, row, column);                   /*assign the filled cell's value in data member 'playingCharacter1' and 'playingCharacter2'*/
+                if (playingCharacter1 == playingCharacter2 && playingCharacter2 == computerChar) /*checking the condition for winning of computer or restricting the user to win*/
+                    return true;
+            }
+
+            /*if none of above return execute means there is no condition of either winning of user or computer.
+             *So, we return false to indicate that don't use passed referenced 'row' & 'column'. Use any other logic to fill the cell (because currently there is no winning situation).
+             */
+            return false;
+        }
+
         /*take arguments of row and column and assign the desired position in passed row and column. Returns true if winning of computer/restricting of user condition found else false.
          *If returns true means winning/restring condition found and row,column contains desired position of cell to fill.
          *If false returns then passed row and column doesn't contains desired position of cell to fill. And to fill this you have to use another logic or easyLevel method. (Recommended to use another logic, which leads to win)
          */
         bool whichCellShouldFilled(short &row, short &column)
         {
+            /*Edit...start*/
+            /*Checking the possibility of computer before restricting the user. If there is any possibility to make computer win by single filling of cell. Then there is no need to restrict user, just fill that cell and won the match. That's enough*/
+            /*see 'COMMENT BLOCK 2122' for more about this edit.*/
+            if (whichCellShouldFilledToMakeComputerWin(row, column))
+                return true;
+            /*if there is no winning condition satisfied for computer then only below code of this function will execute.*/
+            /*Edit...end*/
+
             /*for rows (in first iteration) and column (in 2nd iteration). */
             short forIteration = 0;                              /*for counting the iteration in while loop*/
             for (forIteration; forIteration < 2; forIteration++) /* forIteration=0 for rows (3 rows) and forIteration=1 for columns (3 columns)*/
@@ -410,7 +560,7 @@ class ticTacToe : private allMenu
         }
 
         /*parametrized constructor. We don't have access to the values current object of enclosing class. To solve this, I have used parametrized constructor and passed the matrix and save in this nested class's current object*/
-        mediumLevel(char matrix[][3])
+        mediumLevel(char matrix[][3], char computerChar) /*Edit: Added additional argument of 'computerChar' to check the winning condition of computer before restricting the user. And to check the winning condition of any particular playingChar, we need that one in our function/class*/
         {
             for (int i = 0; i < 3; i++)
             {
@@ -418,6 +568,13 @@ class ticTacToe : private allMenu
                     this->matrix[i][j] = matrix[i][j];
             }
             filledCellsCounter = 0; // assigning by default value of filled cells i.e., 0
+
+            /*assigning the computerChar and userChar below*/
+            this->computerChar = computerChar;
+            if (computerChar == 'O')
+                userChar = 'X';
+            else
+                userChar = 'O';
         }
 
         /*destructor*/
@@ -857,14 +1014,21 @@ class ticTacToe : private allMenu
         /************EASY LEVEL*************/
         if (level == easy)
         {
-            easyLevelFunction(row, column);
+            if (filledCells >= 4)
+            {
+                mediumLevel objMedium(matrix, computerChar);
+                if (!objMedium.whichCellShouldFilledToMakeComputerWin(row, column))
+                    easyLevelFunction(row, column);
+            }
+            else
+                easyLevelFunction(row, column);
         }
         /************MEDIUM LEVEL*************/
         else if (level == medium)
         {
             if (filledCells >= 3) // because next winning condition only possible if 3 cells are filled (2 by user and 1 by computer because user has started the game.)
             {
-                mediumLevel objMedium(matrix); // creating instance of nested class mediumLevel and passing the address of matrix of this object as parameter of constructor because we don't have access to this object in nested function but we need to use the dataMember values (matrix/gamePad) in the nested class.
+                mediumLevel objMedium(matrix, computerChar); // creating instance of nested class mediumLevel and passing the address of matrix of this object as parameter of constructor because we don't have access to this object in nested function but we need to use the dataMember values (matrix/gamePad) in the nested class.
                 /*we are taking temporarily 'i' and 'j' variables because we can't pass the reference of original 'row' & 'column'.
                  *If we pass the original 'row' and 'column' of this function to 'whichCellShouldFilled' function then if desired position not found,
                  *then 'row' and 'column' will contains (assigned by) wrong position. So, it's necessary to use temporary variables and if functions returns true then assign them to original 'row' and 'column'.
@@ -888,7 +1052,7 @@ class ticTacToe : private allMenu
             // cout << "Code not written for impossible level" << endl;
             // return false; // code not written yet
 
-            mediumLevel objMedium(matrix);
+            mediumLevel objMedium(matrix, computerChar);
             bool isComputerVShapedPossible = false;
 
             if (filledCells < 3)
