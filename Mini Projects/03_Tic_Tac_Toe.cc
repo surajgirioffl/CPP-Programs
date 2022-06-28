@@ -926,14 +926,21 @@ class ticTacToe : private allMenu
         char cellNumber;      // store cell number (command)
         short tempCellNumber; // store cell number in integer (by subtracting 48 from character)
         short loopCounter = 0;
+        bool isDisplayCleared = false; /*if screen get cleared due to any reason then this will be true else false*/
         while (true)
         {
             loopCounter++;
-            if (loopCounter == 1) // this if() for user only and below 2 lines of code for both (user & developer as player)
+            if (loopCounter == 1 || isDisplayCleared) // this if() for user only and below 2 lines of code for both (user & developer as player)
             {
+                if (isDisplayCleared) /*if display is cleared then we need to show menu, gamePad etc again*/
+                {
+                    displayCurrentGameInfoBlockMenu();
+                    displayGamePad();
+                }
                 cout << "\033[38;5;51;3m\nWrite you cell choice: \033[38;5;99m(Press '#' to exit).\033[0m" << endl;
                 // cout << "&'@' to clear the screen.)\033[0m" << endl;//for developers
                 cout << "$ ";
+                isDisplayCleared = false;
             }
             fflush(stdin);
 
@@ -941,13 +948,8 @@ class ticTacToe : private allMenu
             tempCellNumber = cellNumber - 48;
             general generalObj;
             /*now checking the conditions*/
-            if (cellNumber == '\n') // if user pressed enter
-            {
-                system("cls");
-                displayGamePad();
-                continue;
-            }
-            else if (cellNumber == '#') /*if user want to exit*/
+
+            if (cellNumber == '#') /*if user wants to exit*/
             {
                 cout << "#";
                 return false;
@@ -959,12 +961,16 @@ class ticTacToe : private allMenu
                 commandInterpreter(tempCellNumber, i, j);
                 /*we will first check that if the given cell is empty or not. If cell is empty then good and If already filled then it will error and user need to re-input the cellNumber*/
                 if (!isCellEmpty(i, j)) // returns true if empty else false
+                {
+                    system("cls");
+                    isDisplayCleared = true;
                     continue;
+                }
                 matrix[i][j] = userChar; // assigning the userChar/playingCharacter in the selected cell
                 break;
             }
             else
-                continue; // if user select any random character/string which not from any of command.
+                continue; // if user select any random character/string/press enter which is not from any of command.
 
             // START OF 'CODE FOR PROGRAMMERS' (MEANS IF USER IS A PROGRAMMER)//
             //  for developers and execute only if need because it display error message if any invalid input entered. But in case of user, there will no error will be shown. If correct input given then only shown else input will discarded.//
@@ -1380,6 +1386,23 @@ class ticTacToe : private allMenu
         return gameLevelInString;
     }
 
+    /*Display the current game info like playing character of user, computer & game number, game level etc to user for ease in playing */
+    void displayCurrentGameInfoBlockMenu()
+    {
+        cout << "\033[38;5;238m******************************************************************" << endl;
+        cout << "\033[38;5;238m*                  \033[38;5;101;3mUser Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
+        cout << "\033[38;5;238m*                  \033[38;5;101;3mComputer Playing Character : " << computerChar << "                \033[38;5;238m*" << endl;
+        if (numberOfTimesGamePlayed > 9) // if game played will be in 2 digits then design of square hamper. We can use printf("%02d",var) but I haven't use it because I don't want include whole stdio.h file in this program. So, I am managing spaces by checking this condition.
+            cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                               \033[38;5;238m*" << endl;
+        else
+            cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                                \033[38;5;238m*" << endl;
+        cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Level : " << whatIsCurrentGameLevel() << "                       \033[38;5;238m*" << endl;
+        cout << "\033[38;5;238m******************************************************************";
+        cout << "\n\033[38;5;238m*********\033[38;5;149m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
+             << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;238m*********\033[0m" << endl
+             << endl;
+    }
+
     /*supreme function to control all activities in the game. returns true on success else false on failure or exit without completion of game*/
     bool startGame()
     {
@@ -1407,18 +1430,7 @@ class ticTacToe : private allMenu
         bool wonFlag = false; // this is a flag to mark if any one won the game or not. By default it is false
         while (filledCells <= 9)
         {
-            cout << "\033[38;5;238m******************************************************************" << endl;
-            cout << "\033[38;5;238m*                  \033[38;5;101;3mUser Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
-            cout << "\033[38;5;238m*                  \033[38;5;101;3mComputer Playing Character : " << computerChar << "                \033[38;5;238m*" << endl;
-            if (numberOfTimesGamePlayed > 9) // if game played will be in 2 digits then design of square hamper. We can use printf("%02d",var) but I haven't use it because I don't want include whole stdio.h file in this program. So, I am managing spaces by checking this condition.
-                cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                               \033[38;5;238m*" << endl;
-            else
-                cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                                \033[38;5;238m*" << endl;
-            cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Level : " << whatIsCurrentGameLevel() << "                       \033[38;5;238m*" << endl;
-            cout << "\033[38;5;238m******************************************************************";
-            cout << "\n\033[38;5;190m*********\033[38;5;201m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
-                 << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*********\033[0m" << endl
-                 << endl;
+            displayCurrentGameInfoBlockMenu(); /*to display the current game info like game number, playing character, gameLevel etc to user for him/her ease*/
             displayGamePad();
             if (userTurn())
             {
