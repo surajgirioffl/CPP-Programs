@@ -120,9 +120,9 @@ public:
     void gameRestartMenuBlock()
     {
         cout << "\n\n\033[38;5;208m+++++++++++++++++++GAME RESTART MENU++++++++++++++++++++\033[0m" << endl;
-        cout << "\033[38;5;201mDo you want to start a new game?" << endl
-             << "\033[38;5;190m=> Press '1' or 'enter' to restart the game." << endl
-             << "=> Press '#' to exit the game." << endl
+        cout << "\033[38;5;190mDo you want to start a new game?" << endl
+             << "\033[38;5;201;1;3m=> Press '1' or 'enter' to start a new game.\033[0m" << endl
+             << "\033[28;5;190m=> Press '#' to exit the game." << endl
              << "=> Press '@' to clear the display.\033[0m" << endl
              << "\033[38;5;159mWrite your choice:\033[0m" << endl;
         cout << "$ ";
@@ -165,13 +165,13 @@ public:
         if (userSelectedDefaultGameLevel == 0) // by default static int is 0 and when user selected once 1 for easy then userSelectedDefaultGameLevel will become 1. If user has selected by default from beginning then it will not change and still 0. So, I have used 0 & 1 in OR in condition of if().
             cout << "=> Press 'enter' for default level (easy)." << endl;
         else if (userSelectedDefaultGameLevel == 1)
-            cout << "=> Press 'enter' for your last selected level (EASY)." << endl;
+            cout << "\033[38;5;201;3;1m=> Press 'enter' for your last selected level (EASY)." << endl;
         else if (userSelectedDefaultGameLevel == 2)
-            cout << "=> Press 'enter' for your last selected level (MEDIUM)." << endl;
+            cout << "\033[38;5;201;3;1m=> Press 'enter' for your last selected level (MEDIUM)." << endl;
         else // for gameLevel==3 for impossibleLevel
-            cout << "=> Press 'enter' for your last selected level (IMPOSSIBLE)." << endl;
+            cout << "\033[38;5;201;3;1m=> Press 'enter' for your last selected level (IMPOSSIBLE)." << endl;
 
-        cout << "=> Press '#' for exit game." << endl;
+        cout << "\033[38;5;82;3m=> Press '#' for exit game." << endl;
         cout << "=> Press '@' for clear the display.\033[0m" << endl;
         cout << "\033[38;5;123mWrite your choice:\033[0m" << endl;
     }
@@ -700,7 +700,7 @@ class ticTacToe : private allMenu
                 cout << "=> Press 'enter' for default ('X').\033[0m" << endl;
             else
             {
-                cout << "=> Press 'enter' for your default ('" << userChar << "')."
+                cout << "\033[38;5;201;1;3m=> Press 'enter' for your default ('" << userChar << "')."
                      << "\033[0m" << endl;
             }
             char choice;
@@ -1438,8 +1438,9 @@ class ticTacToe : private allMenu
         /*1. Now, we will ask user to select the playingCharacter 'X' or 'O'*/
         playingCharacterSelector();
         /*2. we need to display the command that will be used by user to select his/her cell to play*/
-        displayCellInputInstructions();
-        cout << endl;
+        if (numberOfTimesGamePlayed == 1) /*The instruction menu will be displayed only once in one session*/
+            displayCellInputInstructions();
+        cout << "\033[38;5;159;1;3m" << endl;
         system("pause"); // pause the screen until user press any key
         // cout << "\e[2J\e[H"; // clear the display and placed to cursor to position (0,0)
         system("cls"); // clear the display
