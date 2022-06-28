@@ -28,6 +28,20 @@
 #include <conio.h>
 using namespace std;
 int numberOfTimesGamePlayed; /*Global variable to count the number of times game played by user in the current session*/
+int userWonCounter;          /*Global variable to count the number of times user won the game in current session*/
+int computerWonCounter;      /*Global variable to count the number of times computer won the game in current session*/
+int drawCounter;             /*Global variable to count the number of times games draw in current session*/
+
+/*global function to display the game statics of current session*/
+void displayTheGameStatistics()
+{
+    printf("\n\n\033[38;5;190m*********GAME STATICS OF CURRENT SESSION**********\n");
+    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times game played           : %02d\033[38;5;190m*\n", numberOfTimesGamePlayed);
+    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times user won the game     : %02d\033[38;5;190m*\n", userWonCounter);
+    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times computer won the game : %02d\033[38;5;190m*\n", computerWonCounter);
+    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times game draw             : %02d\033[38;5;190m*\n", drawCounter);
+    printf("\033[38;5;190m***************************************************\n");
+}
 class general
 {
 public:
@@ -1416,6 +1430,7 @@ class ticTacToe : private allMenu
                         displayGamePad(true);
                         cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
+                        userWonCounter++;
                         break;
                     }
                     /*COMMENT CODE 1021
@@ -1446,6 +1461,7 @@ class ticTacToe : private allMenu
                         system("cls");
                         displayGamePad(true);
                         cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+                        computerWonCounter++;
                         wonFlag = true;
                         break;
                     }
@@ -1456,7 +1472,10 @@ class ticTacToe : private allMenu
             system("cls"); /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
         }                  /*end of while*/
         if (!wonFlag)      // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
+        {
             cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+            drawCounter++;
+        }
         return true;
     }
 
@@ -1509,6 +1528,7 @@ int main()
         else
             break;
     }
+    displayTheGameStatistics();
     cout << "\n\033[38;5;51mTHANKS FOR USING TIC-TAC-TOE." << endl
          << "\033[38;5;128mSee you soon!" << endl
          << "Bye Bye........." << endl;
