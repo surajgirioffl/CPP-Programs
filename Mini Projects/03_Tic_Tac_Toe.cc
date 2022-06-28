@@ -106,7 +106,7 @@ public:
     void gameRestartMenuBlock()
     {
         cout << "\n\n\033[38;5;208m+++++++++++++++++++GAME RESTART MENU++++++++++++++++++++\033[0m" << endl;
-        cout << "\033[38;5;201mDo you want to restart the game?" << endl
+        cout << "\033[38;5;201mDo you want to start a new game?" << endl
              << "\033[38;5;190m=> Press '1' or 'enter' to restart the game." << endl
              << "=> Press '#' to exit the game." << endl
              << "=> Press '@' to clear the display.\033[0m" << endl
