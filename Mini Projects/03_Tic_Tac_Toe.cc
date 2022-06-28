@@ -933,7 +933,7 @@ class ticTacToe : private allMenu
                 displayGamePad();
                 continue;
             }
-            else if (cellNumber == '#')
+            else if (cellNumber == '#') /*if user want to exit*/
             {
                 cout << "#";
                 return false;
@@ -950,7 +950,7 @@ class ticTacToe : private allMenu
                 break;
             }
             else
-                continue;
+                continue; // if user select any random character/string which not from any of command.
 
             // START OF 'CODE FOR PROGRAMMERS' (MEANS IF USER IS A PROGRAMMER)//
             //  for developers and execute only if need because it display error message if any invalid input entered. But in case of user, there will no error will be shown. If correct input given then only shown else input will discarded.//
