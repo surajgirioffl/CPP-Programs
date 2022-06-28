@@ -688,6 +688,7 @@ class ticTacToe : private allMenu
                 {
                     userChar = 'O';
                     computerChar = 'X';
+                    break;
                 }
                 else
                 {
