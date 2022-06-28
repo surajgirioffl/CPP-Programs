@@ -25,6 +25,7 @@
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
+#include <conio.h>
 using namespace std;
 int numberOfTimesGamePlayed; /*Global variable to count the number of times game played by user in the current session*/
 class general
@@ -77,6 +78,14 @@ public:
                 break;
         }
         return false; /*if series is not correct OR desiredElement doesn't found in default/provided range.*/
+    }
+
+    /*this function takes argument of a number and if number is in range of 1 to 9 then it returns true else false*/
+    bool isInRangeOf1to9(int number)
+    {
+        if (number >= 1 && number <= 9)
+            return true;
+        return false;
     }
 };
 
@@ -902,46 +911,85 @@ class ticTacToe : private allMenu
     {
         char cellNumber;      // store cell number (command)
         short tempCellNumber; // store cell number in integer (by subtracting 48 from character)
+        short loopCounter = 0;
         while (true)
         {
-            cout << "\033[38;5;51;3m\nWrite you cell choice: \033[38;5;99m(Press '#' to exit & '@' to clear the screen.)\033[0m" << endl;
-            cout << "$ ";
+            loopCounter++;
+            if (loopCounter == 1) // this if() for user only and below 2 lines of code for both (user & developer as player)
+            {
+                cout << "\033[38;5;51;3m\nWrite you cell choice: \033[38;5;99m(Press '#' to exit).\033[0m" << endl;
+                // cout << "&'@' to clear the screen.)\033[0m" << endl;//for developers
+                cout << "$ ";
+            }
             fflush(stdin);
-            cellNumber = cin.get();
-            tempCellNumber = cellNumber - 48; // converting character to respective integer for testing. (typeCasting not working. why?)
 
+            char cellNumber = getch();
+            tempCellNumber = cellNumber - 48;
+            general generalObj;
             /*now checking the conditions*/
             if (cellNumber == '\n') // if user pressed enter
-                continue;
-            else if (cellNumber == '#')
-                return false;
-            else if (cellNumber == '@')
             {
                 system("cls");
                 displayGamePad();
                 continue;
             }
-            else if (tempCellNumber < 1 || tempCellNumber > 9) // cell number must be between 1 and 9
+            else if (cellNumber == '#')
             {
-                cout << "\033[1;31m\nFatal Error: Invalid Cell Choice." << endl;
-                cout << "\033[1;32mPlease select your choice again.\033[0m" << endl;
+                cout << "#";
+                return false;
             }
-            else
+            else if (generalObj.isInRangeOf1to9(tempCellNumber))
             {
-                /*now we have to interpret the command (cellNumber) to it's proper index to insert the playingCharacter in the matrix/GamePad*/
+                cout << cellNumber;
                 short i, j; // for row and column of cell selected by user
                 commandInterpreter(tempCellNumber, i, j);
                 /*we will first check that if the given cell is empty or not. If cell is empty then good and If already filled then it will error and user need to re-input the cellNumber*/
                 if (!isCellEmpty(i, j)) // returns true if empty else false
-                {
-                    cout << "\033[1;31m\nFatal Error: Invalid Cell Choice." << endl;
-                    cout << "Selected cell '" << tempCellNumber << "' is already filled." << endl;
-                    cout << "\033[1;32mPlease select your choice again.\033[0m" << endl;
                     continue;
-                }
                 matrix[i][j] = userChar; // assigning the userChar/playingCharacter in the selected cell
                 break;
             }
+            else
+                continue;
+
+            // START OF 'CODE FOR PROGRAMMERS' (MEANS IF USER IS A PROGRAMMER)//
+            //  for developers and execute only if need because it display error message if any invalid input entered. But in case of user, there will no error will be shown. If correct input given then only shown else input will discarded.//
+            //   cellNumber = cin.get();
+            //   tempCellNumber = cellNumber - 48; // converting character to respective integer for testing. (typeCasting not working. why?)
+
+            // /*now checking the conditions*/
+            // if (cellNumber == '\n') // if user pressed enter
+            //     continue;
+            // else if (cellNumber == '#')
+            //     return false;
+            // else if (cellNumber == '@')
+            // {
+            //     system("cls");
+            //     displayGamePad();
+            //     continue;
+            // }
+            // else if (tempCellNumber < 1 || tempCellNumber > 9) // cell number must be between 1 and 9
+            // {
+            //     cout << "\033[1;31m\nFatal Error: Invalid Cell Choice." << endl;
+            //     cout << "\033[1;32mPlease select your choice again.\033[0m" << endl;
+            // }
+            // else
+            // {
+            //     /*now we have to interpret the command (cellNumber) to it's proper index to insert the playingCharacter in the matrix/GamePad*/
+            //     short i, j; // for row and column of cell selected by user
+            //     commandInterpreter(tempCellNumber, i, j);
+            //     /*we will first check that if the given cell is empty or not. If cell is empty then good and If already filled then it will error and user need to re-input the cellNumber*/
+            //     if (!isCellEmpty(i, j)) // returns true if empty else false
+            //     {
+            //         cout << "\033[1;31m\nFatal Error: Invalid Cell Choice." << endl;
+            //         cout << "Selected cell '" << tempCellNumber << "' is already filled." << endl;
+            //         cout << "\033[1;32mPlease select your choice again.\033[0m" << endl;
+            //         continue;
+            //     }
+            //     matrix[i][j] = userChar; // assigning the userChar/playingCharacter in the selected cell
+            //     break;
+            // }
+            // END OF CODE OF PROGRAMMERS FOR INPUT//
         }
 
         /**Fixed bug. fixed abnormal termination of game when user select any empty cell to fill (particularly for cell number 9)". I have found that control auto send false only incase of cell number 9 input by user else it returns true. But it's wrong. We have to explicitly mention the return statement.
