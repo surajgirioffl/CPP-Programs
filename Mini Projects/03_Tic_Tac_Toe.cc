@@ -1353,6 +1353,19 @@ class ticTacToe : private allMenu
         }
     }
 
+    /*returns the current game level in string object and all strings have same precision */
+    string whatIsCurrentGameLevel()
+    {
+        string gameLevelInString;
+        if (level == easy)
+            gameLevelInString = "Easy      ";
+        else if (level == medium)
+            gameLevelInString = "Medium    ";
+        else // if (level== impossible)
+            gameLevelInString = "Impossible";
+        return gameLevelInString;
+    }
+
     /*supreme function to control all activities in the game. returns true on success else false on failure or exit without completion of game*/
     bool startGame()
     {
@@ -1380,6 +1393,18 @@ class ticTacToe : private allMenu
         bool wonFlag = false; // this is a flag to mark if any one won the game or not. By default it is false
         while (filledCells <= 9)
         {
+            cout << "\033[38;5;238m******************************************************************" << endl;
+            cout << "\033[38;5;238m*                  \033[38;5;101;3mUser Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
+            cout << "\033[38;5;238m*                  \033[38;5;101;3mComputer Playing Character : " << computerChar << "                \033[38;5;238m*" << endl;
+            if (numberOfTimesGamePlayed > 9) // if game played will be in 2 digits then design of square hamper. We can use printf("%02d",var) but I haven't use it because I don't want include whole stdio.h file in this program. So, I am managing spaces by checking this condition.
+                cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                               \033[38;5;238m*" << endl;
+            else
+                cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                                \033[38;5;238m*" << endl;
+            cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Level : " << whatIsCurrentGameLevel() << "                       \033[38;5;238m*" << endl;
+            cout << "\033[38;5;238m******************************************************************";
+            cout << "\n\033[38;5;190m*********\033[38;5;201m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
+                 << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*********\033[0m" << endl
+                 << endl;
             displayGamePad();
             if (userTurn())
             {
@@ -1429,10 +1454,8 @@ class ticTacToe : private allMenu
                 return false; // computer exit the game without completion (written to execute only when codes of medium or impossible level are not completed (temporarily))
             // displayGamePad();
             system("cls"); /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
-            cout << "\n\033[38;5;190m********************\033[38;5;201m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
-                 << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*****************\033[0m" << endl;
-        }             /*end of while*/
-        if (!wonFlag) // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
+        }                  /*end of while*/
+        if (!wonFlag)      // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
             cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
         return true;
     }
