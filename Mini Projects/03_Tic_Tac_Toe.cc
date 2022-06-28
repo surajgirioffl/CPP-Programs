@@ -695,22 +695,40 @@ class ticTacToe : private allMenu
             cout << "\033[38;5;225m\nSelect your playing character." << endl;
             cout << "\033[38;5;214m=> Press '1' for 'X' " << endl;
             cout << "=> Press '2' for 'O' " << endl;
-            cout << "=> Press 'enter' for default ('X').\033[0m" << endl;
+            /*modifying the code for changing the default playerChar from fixed 'X' to "default playChar = user Last selected character". And for first time the default is 'X'*/
+            if (numberOfTimesGamePlayed == 1) /*for game 1 of current session*/
+                cout << "=> Press 'enter' for default ('X').\033[0m" << endl;
+            else
+            {
+                cout << "=> Press 'enter' for your default ('" << userChar << "')."
+                     << "\033[0m" << endl;
+            }
             char choice;
             cout << "$ ";
             fflush(stdin); // flushing the standard input stream's buffer
             choice = cin.get();
 
             if (choice == '\n') // if user has pressed 'enter' for default
+            {
+                // if (numberOfTimesGamePlayed != 1) // for !=1. Because for gameNumber1 the default constructor assign userChar to 'X' and computerChar to 'O'. And if user press enter for default in gameNumber1 then the default assignment by constructor will followed and no need to modify.
+                /*so in any gameNumber if user press enter for default then we don't need to assign anything to user/computerChar because if it's first game then by default assigned by constructor else preassigned by user in below else block of while()*/
+                cout << "\033[1;3;32mNice, Playing Character '" << userChar << "' Selected......" << endl;
                 break;
+            }
             else
             {
                 if (choice == '1') // means userChar='X' and by default it is same
+                {
+                    userChar = 'X';
+                    computerChar = 'O';
+                    cout << "\033[1;3;32mNice, Playing Character 'X' Selected......" << endl;
                     break;
+                }
                 else if (choice == '2')
                 {
                     userChar = 'O';
                     computerChar = 'X';
+                    cout << "\033[1;3;32mNice, Playing Character 'O' Selected......" << endl;
                     break;
                 }
                 else
