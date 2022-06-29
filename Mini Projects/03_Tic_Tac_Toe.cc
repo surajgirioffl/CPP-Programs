@@ -27,22 +27,23 @@
 #include <stdlib.h>
 #include <conio.h>
 using namespace std;
-int numberOfTimesGamePlayed;     /*Global variable to count the number of times game played by user in the current session*/
-int userWonCounter;              /*Global variable to count the number of times user won the game in current session*/
-int computerWonCounter;          /*Global variable to count the number of times computer won the game in current session*/
-int drawCounter;                 /*Global variable to count the number of times games draw in current session*/
-char traceCellFillingInGame[10]; // Global String for developers only. It stores the the cell filled by user and computer in as it is sequence to analyses the win/loss and logics (for developers only.). Developers can see this string by calling the function "TraceCellFillingInGameFunction()" just after typing '~' in any input buffer accepting input after win/loss of game.
-short globalTracingIndex;        // for index of string 'traceCellFillingInGame'
+int numberOfTimesGamePlayed;                            /*Global variable to count the number of times game played by user in the current session*/
+int userWonCounter;                                     /*Global variable to count the number of times user won the game in current session*/
+int computerWonCounter;                                 /*Global variable to count the number of times computer won the game in current session*/
+int drawCounter;                                        /*Global variable to count the number of times games draw in current session*/
+char traceCellFillingInGame[10];                        // Global String for developers only. It stores the the cell filled by user and computer in as it is sequence to analyses the win/loss and logics (for developers only.). Developers can see this string by calling the function "TraceCellFillingInGameFunction()" just after typing '~' in any input buffer accepting input after win/loss of game.
+short globalTracingIndex;                               // for index of string 'traceCellFillingInGame'
+bool restartNextNewGameWithNewGameConfiguration = true; // global variable if contains true then it helps in continuing to next game without asking the user about configuration in every new game else continue to next game with a new game configuration and displaying the first menu again.. (by default in first game : true).
 
 /*global function to display the game statics of current session*/
 void displayTheGameStatistics()
 {
-    printf("\n\n\033[38;5;190m*********GAME STATICS OF CURRENT SESSION**********\n");
-    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times game played           : %02d\033[38;5;190m*\n", numberOfTimesGamePlayed);
-    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times user won the game     : %02d\033[38;5;190m*\n", userWonCounter);
-    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times computer won the game : %02d\033[38;5;190m*\n", computerWonCounter);
-    printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times game draw             : %02d\033[38;5;190m*\n", drawCounter);
-    printf("\033[38;5;190m***************************************************\n");
+    printf("\n\n\033[38;5;190m**********GAME STATICS OF CURRENT SESSION***********\n");
+    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times game played           : %02d\033[38;5;190m *\n", numberOfTimesGamePlayed);
+    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times user won the game     : %02d\033[38;5;190m *\n", userWonCounter);
+    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times computer won the game : %02d\033[38;5;190m *\n", computerWonCounter);
+    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times game draw             : %02d\033[38;5;190m *\n", drawCounter);
+    printf("\033[38;5;190m****************************************************\n");
 }
 
 void traceCellFillingInGameFunction()
@@ -1525,7 +1526,7 @@ class ticTacToe : private allMenu
     void displayCurrentGameInfoBlockMenu()
     {
         cout << "\033[38;5;238m******************************************************************" << endl;
-        cout << "\033[38;5;238m*                  \033[38;5;101;3mUser Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
+        cout << "\033[38;5;238m*                  \033[38;5;101;3mYour Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
         cout << "\033[38;5;238m*                  \033[38;5;101;3mComputer Playing Character : " << computerChar << "                \033[38;5;238m*" << endl;
         if (numberOfTimesGamePlayed > 9) // if game played will be in 2 digits then design of square hamper. We can use printf("%02d",var) but I haven't use it because I don't want include whole stdio.h file in this program. So, I am managing spaces by checking this condition.
             cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                               \033[38;5;238m*" << endl;
@@ -1542,7 +1543,9 @@ class ticTacToe : private allMenu
     bool startGame()
     {
         /*0. first we need to ask the level of game user wants to play*/
-        short returnedValue = gameLevelMenu(); // gameLevelMenu() returns -1 if user exits
+        static int returnedValue; // static int because we don't want to take gameLevel from user in every newGame in current session. This will only execute if user will want else only once i.e., first time.
+        if (restartNextNewGameWithNewGameConfiguration)
+            returnedValue = gameLevelMenu(); // gameLevelMenu() returns -1 if user exits
         if (returnedValue == -1)
             return false;
         else if (returnedValue == 1)
@@ -1553,12 +1556,27 @@ class ticTacToe : private allMenu
             level = impossible;
 
         /*1. Now, we will ask user to select the playingCharacter 'X' or 'O'*/
-        playingCharacterSelector();
+        static char userCharStatic;                     /*to store the last time userSelectedChar in static way.*/
+        if (restartNextNewGameWithNewGameConfiguration) /*for firs time or if user want to modify the game configuration*/
+        {
+            playingCharacterSelector();
+            userCharStatic = userChar; /*If user has changes then we need to modify it*/
+        }
+        else
+        {
+            if (userCharStatic == 'O') // if userChar is 'O' then it will work else by default userChar is 'X' after creating every new object of ticTacToe(by default constructor)
+            {
+                userChar = 'O';
+                computerChar = 'X';
+            }
+        }
         /*2. we need to display the command that will be used by user to select his/her cell to play*/
-        if (numberOfTimesGamePlayed == 1) /*The instruction menu will be displayed only once in one session*/
+        if (restartNextNewGameWithNewGameConfiguration) /*The instruction menu will be displayed only once in one session or if user want.*/
+        {
             displayCellInputInstructions();
-        cout << "\033[38;5;159;1;3m" << endl;
-        system("pause"); // pause the screen until user press any key
+            cout << "\033[38;5;159;1;3m" << endl;
+            system("pause"); // pause the screen until user press any key
+        }
         // cout << "\e[2J\e[H"; // clear the display and placed to cursor to position (0,0)
         system("cls"); // clear the display
 
@@ -1668,17 +1686,40 @@ int main()
         system("cls");
         {
             /*using block because after returning of control then object will be destroyed by destructor*/
-            allMenu menuObject;
-            menuObject.welcomeMenu();
+            if (restartNextNewGameWithNewGameConfiguration) // can..continue.. variable returns true if continue the game with last game configuration else false.
+            {
+                allMenu menuObject;
+                menuObject.welcomeMenu();
+            }
             ticTacToe obj;
             if (!obj.start()) // start returns true after successful completion of game one times
                 break;        // if start returns false means user want to exit the game.
+            else
+            {
+                cout << "\n\033[38;5;154m--------------------------------------------------------------------\033[0m" << endl;
+                cout << "\033[38;5;202;3;1m=> Press any key to continue to a new game with same configurations.\033[0m" << endl;
+                cout << "\033[38;5;177m=> Press '@' change configurations." << endl;
+                cout << "\033[38;5;177m=> Press '#' to exit." << endl;
+                cout << "\033[38;5;154m---------------------------------------------------------------------\033[0m" << endl;
+                cout << "Write your choice:" << endl;
+                cout << "$ ";
+                char choice = cin.get();
+                if (choice == '#')
+                    break;
+                else if (choice == '@')
+                    restartNextNewGameWithNewGameConfiguration = true;
+                else
+                    restartNextNewGameWithNewGameConfiguration = false;
+            }
         }
-        allMenu menuObject;
-        if (menuObject.gameRestartMenu())
-            continue;
-        else
-            break;
+        if (restartNextNewGameWithNewGameConfiguration)
+        {
+            allMenu menuObject;
+            if (menuObject.gameRestartMenu())
+                continue;
+            else
+                break;
+        }
     }
     displayTheGameStatistics();
     cout << "\n\033[38;5;51mTHANKS FOR USING TIC-TAC-TOE." << endl
