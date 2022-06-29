@@ -1711,7 +1711,7 @@ int main()
                     restartNextNewGameWithNewGameConfiguration = true;
                 else
                 {
-                    if (choice == '`') // to trace the cellFilling pattern For developers
+                    if (choice == '~') // to trace the cellFilling pattern For developers
                     {
                         traceCellFillingInGameFunction();
                         system("pause");
