@@ -1212,6 +1212,57 @@ class ticTacToe : private allMenu
         return false; // if no condition satisfied
     }
 
+    /*this function is related to special condition (double winning condition) named L-Shaped-2nd.
+     *It returns true if both left and right cells of an empty corner is filled by user else false.
+     *Takes argument of cornerCellNumber as reference and if returns true then cornerCellNumber contains required empty cornerCellNumber else no changes in it.
+     */
+    bool isLeftRightCellsOfAnyEmptyCornerFilledByUser(short &cornerCellNumber)
+    {
+        /*cornerCells are 1(0,0), 3(0,2),7(2,0) & 9(2,2)*/
+        if (isCellEmpty(0, 0))
+        {
+            // left cell = 2(0,1)
+            // right cell = 4(1,0)
+            if (isCellFilledByUser(0, 1) && isCellFilledByUser(1, 0))
+            {
+                cornerCellNumber = reverseCommandInterpreter(0, 0);
+                return true;
+            }
+        }
+        if (isCellEmpty(0, 2))
+        {
+            // left cell = 2(0,1)
+            // right cell = 4(1,2)
+            if (isCellFilledByUser(0, 1) && isCellFilledByUser(1, 2))
+            {
+                cornerCellNumber = reverseCommandInterpreter(0, 2);
+                return true;
+            }
+        }
+        if (isCellEmpty(2, 0))
+        {
+            // left cell = 2(1,0)
+            // right cell = 4(2,1)
+            if (isCellFilledByUser(1, 0) && isCellFilledByUser(2, 1))
+            {
+                cornerCellNumber = reverseCommandInterpreter(2, 0);
+                return true;
+            }
+        }
+        if (isCellEmpty(2, 2))
+        {
+            // left cell = 2(2,1)
+            // right cell = 4(1,2)
+            if (isCellFilledByUser(2, 1) && isCellFilledByUser(1, 2))
+            {
+                cornerCellNumber = reverseCommandInterpreter(2, 2);
+                return true;
+            }
+        }
+        else
+            return false;
+    }
+
     /*to input 'X' or 'O' from computer in game. On success returns true else false*/
     bool computerTurn()
     {
@@ -1283,66 +1334,96 @@ class ticTacToe : private allMenu
                     isComputerVShapedPossible = true;
                 }
             }
+            /*we are checking most case in condition "filledCells=3" because when user filled 2 cells then user intension is visible about making 2 winning condition from any of 4 (v-shaped, expanded-l-shaped or l-shaped or l-shaped-2nd.). So, we are restring user on the basis of his filled 2 cells*/
             /*below is one special condition when only 3 cells are filled(2 by user and 1 by computer) in which user has filled the 2 diagonally opposite corners and computer has filled one mid(1,1) cell.*/
-            else if (filledCells == 3 && matrix[1][1] == computerChar && isDiagonallyOppositeCornersFilledByUser())
+            else if (filledCells == 3 && matrix[1][1] == computerChar) // means mid-mid-Cell(1,1) is not filled by user. Means v-shaped not possible for user. So, he can use any of rest 2 double winning condition maker.
             {
-                /*why this special condition
-                 *1) if 1st cell is filled by user is any of corner (1,3,7,9)
-                 *2) And by default I have added in impossible level that if user don't select mid then computer will select mid. So, computerChar will be at cell(1,1) i.e., mid.
-                 *3) this condition is only for if 3rd cell is filled by user is the diagonally opposite corner cell of 1st selected corner cell filled by user. (and as per 1st step of this comment one of corner is filled by user).
-                 *if this block doesn't exist then by default as computer will fill any of rest corner cell as programmed in below 'elseif' block.
-                 *and if done so, then computer will lost the game because of becoming 2 winning condition of user..
-                 *and in this block we will restrict to make two winning condition of user by creating a winning condition of computer.
-                 *
-                 * THE EXAMPLE OF ABOVE IS FOLLOWING:
-                 *1) user selected any of 1,3,7,9
-                 *2) by default if user hasn't selected mid(1,1) then computer will select the cell(1,1) i.e., mid
-                 *3) user select any of 9/7/3/1 which is diagonally opposite of the corner cell that user has selected any of 1/3/7/9 respectively in 1st step. (means in this step if user has selected diagonally opposite corner of the corner cell selected by user in 1st step.)
-                 **if we don't restrict user to fill any corner cell in 5th filling then computer will lost the game because of becoming 2 winning conditions.
-                 *So, we have to restrict user in this step (this is 4th cell filling step (2nd turn of computer)) in such a way that user will not fill any corner cell in next step(5th cell filling).
-                 *And to restrict user to fill any corner in next step, we have to create winning situation of computer.
-                 *And now we have to make winning condition for computer to restrict user to create 2 winning conditions for him/her.
-                 **
-                 *Now let's think about how to create winning situation of computer.
-                 *We know that one computerChar is present in overall mid cell(1,1). So, we have many condition to create winning situation of computer.
-                 *1. fill cell 2 to create winning situation 2,5,8 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
-                 *2. fill cell 8 to create winning situation 2,5,8 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
-                 *3. fill cell 4 to create winning situation 4,5,6 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
-                 *4. fill cell 6 to create winning situation 4,5,6 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
-                 *We can fill any of 2,8,4,6 because We know that all these 4 cells are empty till this case because only 3 cells are filled only (2 by user & 1 by computer) in which 2 cells filled by user will at any of 2 diagonally opposite corners (1&9 OR 3&7) and 1 cell is filled by computer which is cellNumber 5 i.e, mid cell(1,1).
+                /*In this block, FilledCells is fixed i.e., 3 (2 by user and 1 by computer).
+                 *And we have manipulate the 2 cells filled by user to estimate the user intention of making 2 winning conditions from any of rest 3 (expanded-l-shaped, l-shaped, l-shaped-2nd) (rest because in this block v-shape is not possible because cell(1,1) is filled by computer not by user. So, computer can use V-shape. We will think on it later.).
+                 *And we have restrict user to making 2 winning conditions.
                  */
-
-                /*Now on the basis of above discussed conditions, we(computer) will fill any of 2,8,4,6 cell.
-                 *But we will use static int here, so that we trace the user who create this situation in current session of program and give different taste to user by filling different cell from 2,8,4,6 in each such situation. If user crates such situation more that 4 times then we again start from filling the 2nd cell.
-                 */
-
-                static int traceUserVisit; /*Counter for current user creating such situation so it's necessary to use the codes of this block. It will always from 0 to 3 for 2,8,4 and 6 cellNumber respectively*/
-
-                if (traceUserVisit == 4)
-                    traceUserVisit = 0;
-
-                if (traceUserVisit == 0)
+                short cornerCellNumber; /* for special condition 3 to store cornerCellNumber modified by function isLeft....FilledByUser() if required conditions satisfied*/
+                /*special condition(double winning condition) 2 (1 is v-shaped) if user has filled 2 diagonally opposite corners (Expanded-L-Shaped Logic). Expanded-L-shaped has 2 conditions: any of opposite corner should be filled (either in same row/column or in diagonal. But here we are same diagonal only because if userChar will filled in 2 cells then it will auto-restricted by whichCellShouldFill() function of medium level which is implement in else block of this if(filledCells==3).*/
+                if (isDiagonallyOppositeCornersFilledByUser())
                 {
-                    commandInterpreter(2, row, column);
-                    traceUserVisit++;
+                    /*why this special condition
+                     *1) if 1st cell is filled by user is any of corner (1,3,7,9)
+                     *2) And by default I have added in impossible level that if user don't select mid then computer will select mid. So, computerChar will be at cell(1,1) i.e., mid.
+                     *3) this condition is only for if 3rd cell is filled by user is the diagonally opposite corner cell of 1st selected corner cell filled by user. (and as per 1st step of this comment one of corner is filled by user).
+                     *if this block doesn't exist then by default as computer will fill any of rest corner cell as programmed in below 'elseif' block.
+                     *and if done so, then computer will lost the game because of becoming 2 winning condition of user..
+                     *and in this block we will restrict to make two winning condition of user by creating a winning condition of computer.
+                     *
+                     * THE EXAMPLE OF ABOVE IS FOLLOWING:
+                     *1) user selected any of 1,3,7,9
+                     *2) by default if user hasn't selected mid(1,1) then computer will select the cell(1,1) i.e., mid
+                     *3) user select any of 9/7/3/1 which is diagonally opposite of the corner cell that user has selected any of 1/3/7/9 respectively in 1st step. (means in this step if user has selected diagonally opposite corner of the corner cell selected by user in 1st step.)
+                     **if we don't restrict user to fill any corner cell in 5th filling then computer will lost the game because of becoming 2 winning conditions.
+                     *So, we have to restrict user in this step (this is 4th cell filling step (2nd turn of computer)) in such a way that user will not fill any corner cell in next step(5th cell filling).
+                     *And to restrict user to fill any corner in next step, we have to create winning situation of computer.
+                     *And now we have to make winning condition for computer to restrict user to create 2 winning conditions for him/her.
+                     **
+                     *Now let's think about how to create winning situation of computer.
+                     *We know that one computerChar is present in overall mid cell(1,1). So, we have many condition to create winning situation of computer.
+                     *1. fill cell 2 to create winning situation 2,5,8 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
+                     *2. fill cell 8 to create winning situation 2,5,8 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
+                     *3. fill cell 4 to create winning situation 4,5,6 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
+                     *4. fill cell 6 to create winning situation 4,5,6 and user need to fill 8 to restrict computer and in this way, user unable to fill any corner and if done so then there will no any possibility of creating any 2 winning situation of userChar.
+                     *We can fill any of 2,8,4,6 because We know that all these 4 cells are empty till this case because only 3 cells are filled only (2 by user & 1 by computer) in which 2 cells filled by user will at any of 2 diagonally opposite corners (1&9 OR 3&7) and 1 cell is filled by computer which is cellNumber 5 i.e, mid cell(1,1).
+                     */
+
+                    /*Now on the basis of above discussed conditions, we(computer) will fill any of 2,8,4,6 cell.
+                     *But we will use static int here, so that we trace the user who create this situation in current session of program and give different taste to user by filling different cell from 2,8,4,6 in each such situation. If user crates such situation more that 4 times then we again start from filling the 2nd cell.
+                     */
+
+                    static int traceUserVisit; /*Counter for current user creating such situation so it's necessary to use the codes of this block. It will always from 0 to 3 for 2,8,4 and 6 cellNumber respectively*/
+
+                    if (traceUserVisit == 4)
+                        traceUserVisit = 0;
+
+                    if (traceUserVisit == 0)
+                    {
+                        commandInterpreter(2, row, column);
+                        traceUserVisit++;
+                    }
+                    else if (traceUserVisit == 1)
+                    {
+                        commandInterpreter(8, row, column);
+                        traceUserVisit++;
+                    }
+                    else if (traceUserVisit == 2)
+                    {
+                        commandInterpreter(4, row, column);
+                        traceUserVisit++;
+                    }
+                    else if (traceUserVisit == 3)
+                    {
+                        commandInterpreter(6, row, column);
+                        traceUserVisit++;
+                    }
                 }
-                else if (traceUserVisit == 1)
+                // /*special condition(double winning condition) 3 if user has filled one corner & one left/right of that corner. (L-Shaped). L-shaped has 2 conditions: */
+                // else if ()
+                // {}//code will be written soon.(this is the current limitation of game in ImpossibleLevel)
+                /*special condition(double winning condition) 4 if user has filled left and right of a corner but that corner is empty. (L-Shaped-2nd)*/
+                else if (isLeftRightCellsOfAnyEmptyCornerFilledByUser(cornerCellNumber))
                 {
-                    commandInterpreter(8, row, column);
-                    traceUserVisit++;
+                    commandInterpreter(cornerCellNumber, row, column);
                 }
-                else if (traceUserVisit == 2)
+                else
                 {
-                    commandInterpreter(4, row, column);
-                    traceUserVisit++;
-                }
-                else if (traceUserVisit == 3)
-                {
-                    commandInterpreter(6, row, column);
-                    traceUserVisit++;
+                    if (!objMedium.whichCellShouldFilled(row, column)) // returns false if no winning/restricting condition found else true.
+                    {
+                        if (fillAnyCornerOfMatrix(row, column)) /*to restrict user to win the game because userChar is at mid position (1,1)*/
+                        {
+                            /*no need to write any code here. because row and column is already modified in 'fillCornerOfMatrix' function and in last 2nd line of this function the same is assign to the matrix.*/
+                        }
+                        else
+                            easyLevelFunction(row, column);
+                    }
                 }
             }
-            else if (!objMedium.whichCellShouldFilled(row, column)) // it returns false when no winning condition found else true if winning condition found and also make correct position of row & column to win computer or restrict user.
+            else if (!objMedium.whichCellShouldFilled(row, column)) // it returns false when no winning condition found else true if winning condition found and also make correct position of row & column to win computer or restrict user. It is recommended to call whichCellShouldFilled() function only if 3 cell are filled (2 by user and 1 by computer).
             {
                 // if (isComputerVShapedPossible) /*to make computer to win the game because computerChar is at mid position (1,1)*/;
 
