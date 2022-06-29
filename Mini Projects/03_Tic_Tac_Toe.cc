@@ -48,10 +48,10 @@ void displayTheGameStatistics()
 
 void traceCellFillingInGameFunction()
 {
-    cout << "*******TRACE CELL FILLING*******" << endl;
+    cout << "\n*******TRACE CELL FILLING*******\033[38;5;154;1m" << endl;
     for (short i = 0; traceCellFillingInGame[i] != '\0'; i++)
         cout << "[" << traceCellFillingInGame[i] << "] -> ";
-    cout << "Game Ended!" << endl;
+    cout << "\033[0mGame Ended!" << endl;
 }
 
 class general
@@ -1710,7 +1710,14 @@ int main()
                 else if (choice == '@')
                     restartNextNewGameWithNewGameConfiguration = true;
                 else
+                {
+                    if (choice == '`') // to trace the cellFilling pattern For developers
+                    {
+                        traceCellFillingInGameFunction();
+                        system("pause");
+                    }
                     restartNextNewGameWithNewGameConfiguration = false;
+                }
             }
         }
         if (restartNextNewGameWithNewGameConfiguration)
