@@ -6,7 +6,8 @@
     "iostream": "cpp",
     "iosfwd": "cpp",
     "xlocnum": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "*.tcc": "cpp"
   },
   "C_Cpp_Runner.cCompilerPath": "D:/Programming/Compilers OR Interpreters/C & C++/MinGW/bin/gcc.exe",
   "C_Cpp_Runner.cppCompilerPath": "g++",
