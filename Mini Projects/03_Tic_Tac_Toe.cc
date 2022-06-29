@@ -1703,7 +1703,8 @@ int main()
                 cout << "\033[38;5;154m---------------------------------------------------------------------\033[0m" << endl;
                 cout << "Write your choice:" << endl;
                 cout << "$ ";
-                char choice = cin.get();
+                // char choice = cin.get();
+                char choice = getch(); // so user don't need to press enter. getch() is unbuffered and exit after reading single char.
                 if (choice == '#')
                     break;
                 else if (choice == '@')
