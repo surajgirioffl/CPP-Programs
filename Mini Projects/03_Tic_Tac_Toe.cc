@@ -27,10 +27,12 @@
 #include <stdlib.h>
 #include <conio.h>
 using namespace std;
-int numberOfTimesGamePlayed; /*Global variable to count the number of times game played by user in the current session*/
-int userWonCounter;          /*Global variable to count the number of times user won the game in current session*/
-int computerWonCounter;      /*Global variable to count the number of times computer won the game in current session*/
-int drawCounter;             /*Global variable to count the number of times games draw in current session*/
+int numberOfTimesGamePlayed;     /*Global variable to count the number of times game played by user in the current session*/
+int userWonCounter;              /*Global variable to count the number of times user won the game in current session*/
+int computerWonCounter;          /*Global variable to count the number of times computer won the game in current session*/
+int drawCounter;                 /*Global variable to count the number of times games draw in current session*/
+char traceCellFillingInGame[10]; // Global String for developers only. It stores the the cell filled by user and computer in as it is sequence to analyses the win/loss and logics (for developers only.). Developers can see this string by calling the function "TraceCellFillingInGameFunction()" just after typing '~' in any input buffer accepting input after win/loss of game.
+short globalTracingIndex;        // for index of string 'traceCellFillingInGame'
 
 /*global function to display the game statics of current session*/
 void displayTheGameStatistics()
@@ -42,6 +44,15 @@ void displayTheGameStatistics()
     printf("\033[38;5;190m*\033[38;5;45;3mTotal number of times game draw             : %02d\033[38;5;190m*\n", drawCounter);
     printf("\033[38;5;190m***************************************************\n");
 }
+
+void traceCellFillingInGameFunction()
+{
+    cout << "*******TRACE CELL FILLING*******" << endl;
+    for (short i = 0; traceCellFillingInGame[i] != '\0'; i++)
+        cout << "[" << traceCellFillingInGame[i] << "] -> ";
+    cout << "Game Ended!" << endl;
+}
+
 class general
 {
 public:
@@ -125,6 +136,7 @@ public:
              << "\033[28;5;190m=> Press '#' to exit the game." << endl
              << "=> Press '@' to clear the display.\033[0m" << endl
              << "\033[38;5;159mWrite your choice:\033[0m" << endl;
+        //  cout<<"write '~' to trace how the cell filled."<< endl;//for developers
         cout << "$ ";
     }
 
@@ -137,6 +149,12 @@ public:
             fflush(stdin); // flushing the standard input stream's buffer
             char choice = cin.get();
             short choiceInInt = choice - 48; // converting character to integer using ASCII
+            if (choice == '~')
+            {
+                traceCellFillingInGameFunction();
+                system("pause");
+                continue;
+            }
             if (choiceInInt == 1 || choice == '\n')
                 return true; // means user want to restart the game
             else if (choice == '@')
@@ -938,6 +956,22 @@ class ticTacToe : private allMenu
         }
     }
 
+    /*It's reverse working function of function commandInterpreter. Take arguments of rows and columns and returns the respective command i.e., cellNumber. If not found returns -1*/
+    short reverseCommandInterpreter(short row, short column)
+    {
+        short cellNumber = 1;
+        for (short i = 0; i < 3; i++)
+        {
+            for (short j = 0; j < 3; j++)
+            {
+                if (row == i && column == j)
+                    return cellNumber;
+                cellNumber++;
+            }
+        }
+        return -1;
+    }
+
     /*to input 'X' or 'O' from user in game. On success returns true else false */
     bool userTurn()
     {
@@ -984,7 +1018,8 @@ class ticTacToe : private allMenu
                     isDisplayCleared = true;
                     continue;
                 }
-                matrix[i][j] = userChar; // assigning the userChar/playingCharacter in the selected cell
+                traceCellFillingInGame[globalTracingIndex++] = cellNumber; // global cell filling tracer for developers ease
+                matrix[i][j] = userChar;                                   // assigning the userChar/playingCharacter in the selected cell
                 break;
             }
             else
@@ -1323,6 +1358,7 @@ class ticTacToe : private allMenu
         }
 
         /*============For All Levels==============*/
+        traceCellFillingInGame[globalTracingIndex++] = 48 + reverseCommandInterpreter(row, column); // global cell filling tracer for developers ease. //+48 to convert the number to character to store in string.
         matrix[row][column] = computerChar;
         return true;
     }
@@ -1462,6 +1498,7 @@ class ticTacToe : private allMenu
                         cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         wonFlag = true;
                         userWonCounter++;
+                        traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
                         break;
                     }
                     /*COMMENT CODE 1021
@@ -1494,6 +1531,7 @@ class ticTacToe : private allMenu
                         cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
                         computerWonCounter++;
                         wonFlag = true;
+                        traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
                         break;
                     }
             }
@@ -1506,6 +1544,7 @@ class ticTacToe : private allMenu
         {
             cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
             drawCounter++;
+            traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
         }
         return true;
     }
@@ -1543,6 +1582,7 @@ int main()
 {
     while (true)
     {
+        globalTracingIndex = 0;    // assigned the index of global string object traceCellFillingINGame to 0 in every new game.
         numberOfTimesGamePlayed++; // increasing the counter which stores the number of times the game was played
         system("cls");
         {
