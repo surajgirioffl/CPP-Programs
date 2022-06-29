@@ -1264,6 +1264,208 @@ class ticTacToe : private allMenu
             return false;
     }
 
+    /**This function list out the cells filled by user (by default) and see below for more info and changes possibles...
+     *Take argument of an array (int*) and fill that cellNumber in it which is filled by user. And returns the total number of cells filled by user.
+     *Take another argument named as 'limitCounter' (by default it is -1) and not in use. It is used if you want to limit counting of number of cells filled by user.
+     *Means if you want to list only 3 filled user cellNumber then you can pass 3 in 'limitCounter' and whenever 3 cells found filled by user then the function returns with that 'limitCounter' and list contains number of cells = limitCounter.
+     *If you don't pass anything to 'limitCounter' then by default all cells of matrix will be checked (till maxCellsCanFilledByUser) and list them out and returns the total cells filled by user.
+     *if callingFunction passes limitCounter then ther is no need to store the returned number because it will same as passed value of limitCounter.
+     */
+    short listTheCellsFilledByUser(int *list, int limitCounter = -1)
+    {
+        short maxCellsCanFilledByUser = 5; /*maximum 5 cells can be filled by user if game draw else less*/
+        short indexOfList = 0;
+        for (short i = 0; i < 3; i++)
+        {
+            for (short j = 0; j < 3; j++)
+            {
+                if (isCellFilledByUser(i, j))
+                {
+                    list[indexOfList++] = reverseCommandInterpreter(i, j);
+                    if (limitCounter > 0 && indexOfList == limitCounter) /*if calling function passed any limit to count the cell filled by user then we will count only those number of cells else traversal will be till maxCellCanFilledByUser or till end*/
+                        break;
+                    else if (indexOfList == maxCellsCanFilledByUser) // user can't fill cell greater than 5
+                        break;
+                }
+            }
+        }
+        return indexOfList; // index of list = total number of cells filled.
+    }
+
+    /*returns true if passed cellNumber is a corner cell else false*/
+    bool isACornerCell(short cellNumber)
+    {
+        /*(1/3/7/9) are the corner cells.*/
+        if (cellNumber == 1 || cellNumber == 3 || cellNumber == 7 || cellNumber == 9)
+            return true;
+        return false;
+    }
+
+    /*returns true if passed cellNumber is a mid cell except cell(1,1) i.e., center else false*/
+    bool isAMidCellExceptTheCenter(short cellNumber)
+    {
+        /*2/4/6/8 are the mid cells. (except cell(1,1))*/
+        if (cellNumber == 2 || cellNumber == 4 || cellNumber == 6 || cellNumber == 8)
+            return true;
+        return false;
+    }
+
+    /*returns true if both received cellNumbers are of different rows and different columns else false.*/
+    bool areBothCellsInDifferentRowsAndColumns(short cellNumber1, short cellNumber2)
+    {
+        short row1, column1, row2, column2; // to stores the position of received both. Indexing is proper as received.
+        commandInterpreter(cellNumber1, row1, column1);
+        commandInterpreter(cellNumber2, row2, column2);
+
+        /*now we have the position of both received cells. If position doesn't match then both cells have different positions i.e., different row and column.*/
+        if (row1 != row2)
+        {
+            if (column1 != column2)
+                return true;
+        }
+        return false;
+
+        /*keep in mind: different positions means different rows & different columns OR different rows & same columns OR same rows & different columns.
+         *But in this function, it is explicitly said that different rows as well as different columns means completely different position. No common row or column is applicable.
+         */
+    }
+
+    /*returns true if either row or column or both of cellNumber2 match with same of cellNumber1 then it returns true else false.*/
+    bool isCellNumber2InSameRowOrColumnOfCellNumber1(short cellNumber1, short cellNumber2)
+    {
+        short row1, column1, row2, column2; // to stores the position of received both. Indexing is proper as received.
+        commandInterpreter(cellNumber1, row1, column1);
+        commandInterpreter(cellNumber2, row2, column2);
+
+        /*now we have the position of both received cellNumbers. If either row or column or both match then cellNumber2 will in same row or column of cellNumber1 and we wil return true else false.*/
+        if (row1 == row2 || column1 == column2)
+            return true;
+        return false;
+    }
+
+    /*take argument of 'midCellNumber' and returns any one cellNumber of 2 of it's adjacent cells.
+     *It also takes an argument of exceptCellNumber and if user passes a cellNumber in it and
+     *it will adjacent of passed midCell then it will not return and control will go for returning the 2nd one.
+     *It will also not work for returning adjacent of center cell(1,1).
+     *It will return only adjacent cells of mid cell (2,4,6,8).
+     *returns -1 on any error or invalid midCellNumber.
+     */
+    short adjacentCellOfMidCellExceptCenter(short midCellNumber, short exceptCellNumber = -1)
+    {
+        /*ADJACENT CELLS OF MID CELLS:
+         *for midCell = 2 --> 1 & 3
+         *for midCell = 4 --> 1 & 7
+         *for midCell = 6 --> 3 & 9
+         *for midCell = 8 --> 7 & 9
+         */
+        if (midCellNumber == 2)
+        {
+            if (exceptCellNumber != 1)
+                return 1;
+            else
+                return 3;
+        }
+        else if (midCellNumber == 4)
+        {
+            if (exceptCellNumber != 1)
+                return 1;
+            else
+                return 7;
+        }
+        else if (midCellNumber == 6)
+        {
+            if (exceptCellNumber != 3)
+                return 3;
+            else
+                return 9;
+        }
+        else if (midCellNumber == 8)
+        {
+            if (exceptCellNumber != 7)
+                return 7;
+            else
+                return 9;
+        }
+        return -1; /*on error or invalid midCellNumber*/
+    }
+
+    /*if lShaped possible then returns true else false. If true then the desired cellNumber is assigned to received argument 'desiredCellNumber' by reference..*/
+    bool isL_ShapedPossible(short &desiredCellNumber)
+    {
+        /*to create l_shaped possible 1st 2 cells must be filled as follow:
+         *One should be on any corner.
+         *And 2nd one should be in mid of row/column (not diagonal) but that cell should not be row and column of 1st selected corner.
+         **The above 2 steps is compulsory but not mandatory to follow the sequence. User is independent to choose step 2 first then step 1 and vice versa also applicable. But The condition must be satisfied as written.
+         *Above both 2 satisfies, then user need to fill, that corner cell which is adjacent to filled mid-cell but it must be in same row/column of the previously filled corner cell (here which is in 1st step).
+         */
+        int listOfUserFilledCells[2];                       // Here in l-shaped we will check only when 3 cells are filled in which 2 cells are filled by user and 1 by computer.
+        listTheCellsFilledByUser(listOfUserFilledCells, 2); // we will not store the returned data because it will equal to passed 'limitCounter' which is 2 in this case.
+
+        /*now we need to check the condition for l_shaped using both filledCells*/
+        /*1. One cell must be a corner. (1/3/7/9).
+          2. 2nd one must be a mid (not 1,1). (2/4/6/8).
+          --> And both must not be in same row or same column.
+         */
+        /*if above condition satisfies, then we need to find that one cell (on the basis of both cells) which will be filled by user to create double winning condition and fill that cell before user to restrict him to create such condition.😂.
+         *REQUIRED CELL: A corner Cell which is adjacent to midCell (means in same row or column of midCell) && in same row/column of 1stSelectedCornerCell (opposite corner of 1stCornerCell but not in diagonally opposite).
+         */
+        if (isACornerCell(listOfUserFilledCells[0])) /*cornerCell*/
+        {
+            if (isAMidCellExceptTheCenter(listOfUserFilledCells[1])) /*midCell*/
+            {
+                /*2 conditions satisfied then now we need to check that both cells (1 corner & 1 mid) must be at different rows as well as different columns.*/
+                if (areBothCellsInDifferentRowsAndColumns(listOfUserFilledCells[0], listOfUserFilledCells[1]))
+                {
+                    short tempDesiredCellNumber = adjacentCellOfMidCellExceptCenter(listOfUserFilledCells[1]);
+                    /*1. now one condition for desired cellNumber has been fulfilled that it should be adjacent of midCell.
+                     *2. Now we will check 2nd conditions that the desiredCell should be in same row OR same column of the cornerFilledCell.*/
+                    if (isCellNumber2InSameRowOrColumnOfCellNumber1(tempDesiredCellNumber, listOfUserFilledCells[0]))
+                    {
+                        desiredCellNumber = tempDesiredCellNumber;
+                        return true;
+                    }
+                    else
+                    {
+                        /*this block executes means previous cellNumber which was one of 2 cells adjacent to midCell but it doesn't satisfied the 2nd condition which is it should be in same row or column of cornerFilledCell of user.*/
+                        // now only one cell left which is adjacent to midCell. So, we will also receive it by below way:
+                        tempDesiredCellNumber = adjacentCellOfMidCellExceptCenter(listOfUserFilledCells[1], tempDesiredCellNumber); // in this time we have except the previous received cell number which hasn't satisfied the 2nd condition. (And we have only 2 cells adjacent to mid one. So, It's last checking.)
+                        /*current desiredCellNumber is only and only adjacent cell which is left and previous received cellNumber fails to satisfy the condition then it's 100% sure that it will satisfy the condition. So, I will not check it (because no other cell left adjacent to midCell) and return it to be filled by computer to restrict user.*/
+                        desiredCellNumber = tempDesiredCellNumber;
+                        return true;
+                    }
+                }
+            }
+        }
+        else if (isAMidCellExceptTheCenter(listOfUserFilledCells[0])) /*midCell*/
+        {
+            if (isACornerCell(listOfUserFilledCells[0])) /*cornerCell*/
+            {
+                /*2 conditions satisfied then now we need to check that both cells (1 corner & 1 mid) must be at different rows as well as different columns.*/
+                if (areBothCellsInDifferentRowsAndColumns(listOfUserFilledCells[1], listOfUserFilledCells[0]))
+                {
+                    short tempDesiredCellNumber = adjacentCellOfMidCellExceptCenter(listOfUserFilledCells[0]);
+                    /*1. now one condition for desired cellNumber has been fulfilled that it should be adjacent of midCell.
+                     *2. Now we will check 2nd conditions that the desiredCell should be in same row OR same column of the cornerFilledCell.*/
+                    if (isCellNumber2InSameRowOrColumnOfCellNumber1(tempDesiredCellNumber, listOfUserFilledCells[1]))
+                    {
+                        desiredCellNumber = tempDesiredCellNumber;
+                        return true;
+                    }
+                    else
+                    {
+                        /*this block executes means previous cellNumber which was one of 2 cells adjacent to midCell but it doesn't satisfied the 2nd condition which is it should be in same row or column of cornerFilledCell of user.*/
+                        // now only one cell left which is adjacent to midCell. So, we will also receive it by below way:
+                        tempDesiredCellNumber = adjacentCellOfMidCellExceptCenter(listOfUserFilledCells[0], tempDesiredCellNumber); // in this time we have except the previous received cell number which hasn't satisfied the 2nd condition. (And we have only 2 cells adjacent to mid one. So, It's last checking.)
+                        /*current desiredCellNumber is only and only adjacent cell which is left and previous received cellNumber fails to satisfy the condition then it's 100% sure that it will satisfy the condition. So, I will not check it (because no other cell left adjacent to midCell) and return it to be filled by computer to restrict user.*/
+                        desiredCellNumber = tempDesiredCellNumber;
+                        return true;
+                    }
+                }
+            }
+        }
+        return false; // no l_shaped possible.
+    }
+
     /*to input 'X' or 'O' from computer in game. On success returns true else false*/
     bool computerTurn()
     {
@@ -1339,9 +1541,13 @@ class ticTacToe : private allMenu
             /*below is one special condition when only 3 cells are filled(2 by user and 1 by computer) in which user has filled the 2 diagonally opposite corners and computer has filled one mid(1,1) cell.*/
             else if (filledCells == 3 && matrix[1][1] == computerChar) // means mid-mid-Cell(1,1) is not filled by user. Means v-shaped not possible for user. So, he can use any of rest 2 double winning condition maker.
             {
+                short desiredCellNumber; // used to store the desired cell number to fill in special condition 3 (l-shaped). L-shaped is very important & powerful.
+
                 /*In this block, FilledCells is fixed i.e., 3 (2 by user and 1 by computer).
                  *And we have manipulate the 2 cells filled by user to estimate the user intention of making 2 winning conditions from any of rest 3 (expanded-l-shaped, l-shaped, l-shaped-2nd) (rest because in this block v-shape is not possible because cell(1,1) is filled by computer not by user. So, computer can use V-shape. We will think on it later.).
                  *And we have restrict user to making 2 winning conditions.
+                 *If we don't restrict user just after filling 2 cells then whenever user will 3rd cell the 2 winning condition may create and computer lost the game.
+                 *So, It's compulsory to restrict user and check all double winning condition and how to restrict the user to create it, only during 2 cells are filled by user.
                  */
                 short cornerCellNumber; /* for special condition 3 to store cornerCellNumber modified by function isLeft....FilledByUser() if required conditions satisfied*/
                 /*special condition(double winning condition) 2 (1 is v-shaped) if user has filled 2 diagonally opposite corners (Expanded-L-Shaped Logic). Expanded-L-shaped has 2 conditions: any of opposite corner should be filled (either in same row/column or in diagonal. But here we are same diagonal only because if userChar will filled in 2 cells then it will auto-restricted by whichCellShouldFill() function of medium level which is implement in else block of this if(filledCells==3).*/
@@ -1404,8 +1610,10 @@ class ticTacToe : private allMenu
                     }
                 }
                 // /*special condition(double winning condition) 3 if user has filled one corner & one left/right of that corner. (L-Shaped). L-shaped has 2 conditions: */
-                // else if ()
-                // {}//code will be written soon.(this is the current limitation of game in ImpossibleLevel)
+                else if (isL_ShapedPossible(desiredCellNumber))
+                {
+                    commandInterpreter(desiredCellNumber, row, column);
+                } // done
                 /*special condition(double winning condition) 4 if user has filled left and right of a corner but that corner is empty. (L-Shaped-2nd)*/
                 else if (isLeftRightCellsOfAnyEmptyCornerFilledByUser(cornerCellNumber))
                 {
