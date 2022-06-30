@@ -1730,8 +1730,11 @@ class ticTacToe : private allMenu
         return gameLevelInString;
     }
 
-    /*Display the current game info like playing character of user, computer & game number, game level etc to user for ease in playing */
-    void displayCurrentGameInfoBlockMenu()
+    /*Display the current game info like playing character of user, computer & game number, game level etc to user for ease in playing.
+     *Edit: added argument named as 'isNeedToDisplayUserComputerTurn'. Means calling function can send false to hide the statics of computer-user turns in game else it will display.
+     *Default value is true.
+     */
+    void displayCurrentGameInfoBlockMenu(bool isNeedToDisplayUserComputerTurn = true)
     {
         cout << "\033[38;5;238m******************************************************************" << endl;
         cout << "\033[38;5;238m*                  \033[38;5;101;3mYour Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
@@ -1742,9 +1745,12 @@ class ticTacToe : private allMenu
             cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                                \033[38;5;238m*" << endl;
         cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Level : " << whatIsCurrentGameLevel() << "                       \033[38;5;238m*" << endl;
         cout << "\033[38;5;238m******************************************************************";
-        cout << "\n\033[38;5;238m*********\033[38;5;149m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
-             << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;238m*********\033[0m" << endl
-             << endl;
+        if (isNeedToDisplayUserComputerTurn)
+        {
+            cout << "\n\033[38;5;238m*********\033[38;5;149m\033[1m\033[3mGamePad After '" << filledCells / 2 << "' User Turn"
+                 << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;238m*********\033[0m" << endl
+                 << endl;
+        }
     }
 
     /*supreme function to control all activities in the game. returns true on success else false on failure or exit without completion of game*/
@@ -1800,9 +1806,10 @@ class ticTacToe : private allMenu
                 if (filledCells > 4)
                     if (isWonTheGame(userChar))
                     {
-                        system("cls"); // clear the display
+                        system("cls");                     // clear the display
+                        displayCurrentGameInfoBlockMenu(); /*to display the current game info like game number, playing character, gameLevel etc to user for him/her ease. User can share screenshot to any one also*/
                         displayGamePad(true);
-                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
+                        cout << "\n\033[38;5;154m+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCONGRATULATION, YOU WON THE GAME!\033[38;5;154m<<=+=+=+=+=+=+=+=+\033[0m" << endl;
                         wonFlag = true;
                         userWonCounter++;
                         traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
@@ -1816,9 +1823,11 @@ class ticTacToe : private allMenu
                      */
                     else if (filledCells == 9)
                     {
-                        system("cls"); /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
-                        cout << "\n\033[38;5;190m********************\033[38;5;201m\033[1m\033[3mGamePad After '" << (filledCells / 2) + 1 << "' User Turn"
-                             << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;190m*****************\033[0m" << endl;
+                        system("cls");                          /*clearing the display after 1 round (1 turn for user and 1 turn for computer)*/
+                        displayCurrentGameInfoBlockMenu(false); /*to display the current game info like game number, playing character, gameLevel etc to user for him/her ease. User can share screenshot to any one also*/
+                        cout << "\n\033[38;5;238m*********\033[38;5;149m\033[1m\033[3mGamePad After '" << (filledCells / 2) + 1 << "' User Turn"
+                             << " && '" << filledCells / 2 << "' Computer Turn\033[0m\033[38;5;238m*********\033[0m\033[0m" << endl
+                             << endl;
                         displayGamePad(); // displaying the draw gamePad
                         break;            // breaking the loop because all cells are filled and no one won. (DRAW)
                     }
@@ -1834,8 +1843,9 @@ class ticTacToe : private allMenu
                     if (isWonTheGame(computerChar))
                     {
                         system("cls");
+                        displayCurrentGameInfoBlockMenu(); /*to display the current game info like game number, playing character, gameLevel etc to user for him/her ease. User can share screenshot to any one also*/
                         displayGamePad(true);
-                        cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+                        cout << "\n\033[38;5;154m+=+=+=+=+=>>\033[38;5;201;3mCOMPUTER WON THE GAME!\033[38;5;129m(Better Luck Next Time)\033[38;5;154m<<=+=+=+=+=+\033[0m" << endl;
                         computerWonCounter++;
                         wonFlag = true;
                         traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
@@ -1849,7 +1859,7 @@ class ticTacToe : private allMenu
         }                  /*end of while*/
         if (!wonFlag)      // if no one won the game then 'wonFlag' will be false and we have display the 'DRAW' status of the game
         {
-            cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=\033[0m" << endl;
+            cout << "\n\033[38;5;154m=+=+=+=+=+=+=+=+=+=>>\033[38;5;201;3mDRAW!\033[38;5;129;3m(No One Won The Game)\033[38;5;154m<<=+=+=+=+=+=+=+=+=+=\033[0m" << endl;
             drawCounter++;
             traceCellFillingInGame[globalTracingIndex] = '\0'; /*Added Null Character to terminate the string if any one won the game*/
         }
@@ -1906,7 +1916,7 @@ int main()
             {
                 cout << "\n\033[38;5;154m--------------------------------------------------------------------\033[0m" << endl;
                 cout << "\033[38;5;202;3;1m=> Press any key to continue to a new game with same configurations.\033[0m" << endl;
-                cout << "\033[38;5;177m=> Press '@' change configurations." << endl;
+                cout << "\033[38;5;177m=> Press '@' to change configurations." << endl;
                 cout << "\033[38;5;177m=> Press '#' to exit." << endl;
                 cout << "\033[38;5;154m---------------------------------------------------------------------\033[0m" << endl;
                 cout << "Write your choice:" << endl;
