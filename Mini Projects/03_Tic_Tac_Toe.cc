@@ -1438,7 +1438,7 @@ class ticTacToe : private allMenu
         }
         else if (isAMidCellExceptTheCenter(listOfUserFilledCells[0])) /*midCell*/
         {
-            if (isACornerCell(listOfUserFilledCells[0])) /*cornerCell*/
+            if (isACornerCell(listOfUserFilledCells[1])) /*cornerCell*/
             {
                 /*2 conditions satisfied then now we need to check that both cells (1 corner & 1 mid) must be at different rows as well as different columns.*/
                 if (areBothCellsInDifferentRowsAndColumns(listOfUserFilledCells[1], listOfUserFilledCells[0]))
