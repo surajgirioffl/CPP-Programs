@@ -1739,11 +1739,14 @@ class ticTacToe : private allMenu
         cout << "\033[38;5;238m******************************************************************" << endl;
         cout << "\033[38;5;238m*                  \033[38;5;101;3mYour Playing Character : " << userChar << "                    \033[38;5;238m*" << endl;
         cout << "\033[38;5;238m*                  \033[38;5;101;3mComputer Playing Character : " << computerChar << "                \033[38;5;238m*" << endl;
+        cout << "\033[38;5;238m*                  \033[38;5;101;3mCurrent Game Level : " << whatIsCurrentGameLevel() << "               \033[38;5;238m*" << endl;
         if (numberOfTimesGamePlayed > 9) // if game played will be in 2 digits then design of square hamper. We can use printf("%02d",var) but I haven't use it because I don't want include whole stdio.h file in this program. So, I am managing spaces by checking this condition.
             cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                               \033[38;5;238m*" << endl;
         else
             cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Number: " << numberOfTimesGamePlayed << "                                \033[38;5;238m*" << endl;
-        cout << "\033[38;5;238m*                  \033[38;5;101;3mGame Level : " << whatIsCurrentGameLevel() << "                       \033[38;5;238m*" << endl;
+        printf("\033[38;5;238m*                  \033[38;5;101;3mUser Won : %02d Times                           \033[38;5;238m*\n", userWonCounter);
+        printf("\033[38;5;238m*                  \033[38;5;101;3mComputer Won : %02d Times                       \033[38;5;238m*\n", computerWonCounter);
+        printf("\033[38;5;238m*                  \033[38;5;101;3mGame Draw : %02d Times                          \033[38;5;238m*\n", drawCounter);
         cout << "\033[38;5;238m******************************************************************";
         if (isNeedToDisplayUserComputerTurn)
         {
