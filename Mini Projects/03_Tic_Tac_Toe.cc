@@ -40,7 +40,7 @@ void displayTheGameStatistics()
 {
     printf("\n\n\033[38;5;190m**********GAME STATICS OF CURRENT SESSION***********\n");
     printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times game played           : %02d\033[38;5;190m *\n", numberOfTimesGamePlayed - 1);
-    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times user won the game     : %02d\033[38;5;190m *\n", userWonCounter);
+    printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times you won the game      : %02d\033[38;5;190m *\n", userWonCounter);
     printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times computer won the game : %02d\033[38;5;190m *\n", computerWonCounter);
     printf("\033[38;5;190m* \033[38;5;45;3mTotal number of times game draw             : %02d\033[38;5;190m *\n", drawCounter);
     printf("\033[38;5;190m****************************************************\n");
@@ -1745,7 +1745,7 @@ class ticTacToe : private allMenu
         else
             cout << "\033[38;5;238m*                  \033[38;5;101;3mCurrent Game Number: " << numberOfTimesGamePlayed << "                        \033[38;5;238m*" << endl;
         printf("\033[38;5;238m*                  \033[38;5;101;3mGame Played : %02d Times                        \033[38;5;238m*\n", numberOfTimesGamePlayed - 1);
-        printf("\033[38;5;238m*                  \033[38;5;101;3mUser Won : %02d Times                           \033[38;5;238m*\n", userWonCounter);
+        printf("\033[38;5;238m*                  \033[38;5;101;3mYou Won : %02d Times                            \033[38;5;238m*\n", userWonCounter);
         printf("\033[38;5;238m*                  \033[38;5;101;3mComputer Won : %02d Times                       \033[38;5;238m*\n", computerWonCounter);
         printf("\033[38;5;238m*                  \033[38;5;101;3mGame Draw : %02d Times                          \033[38;5;238m*\n", drawCounter);
         cout << "\033[38;5;238m******************************************************************";
