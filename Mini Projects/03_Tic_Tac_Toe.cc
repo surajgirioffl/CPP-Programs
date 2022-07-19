@@ -57,6 +57,12 @@ void traceCellFillingInGameFunction()
 class general
 {
 public:
+    /*for taking feedback/bug report/suggestions/others from user*/
+    void feedback()
+    {
+        system("start https://docs.google.com/forms/d/e/1FAIpQLSdkvMXOsVFF7A9kiyCfpwG-dEKcmgBagZJ9szcGKBeu-VJTTw/viewform?usp=pp_url");
+    }
+
     /*returns random number. Changes every second.*/
     int randomNumber()
     {
