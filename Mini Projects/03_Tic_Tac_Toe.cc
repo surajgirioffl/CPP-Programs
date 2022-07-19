@@ -260,7 +260,7 @@ public:
             else if (choice == '@')
             {
                 system("cls");
-                welcomeMenu(); // because this is 2nd menu after welcome menu. So, welcome menu should be visible along with it.
+                welcomeMenu(true); // because this is 2nd menu after welcome menu. So, welcome menu should be visible along with it.
                 continue;
             }
             else if (choice == '#')
