@@ -210,7 +210,8 @@ public:
             cout << "\033[38;5;201;3;1m=> Press 'enter' for your last selected level (IMPOSSIBLE)." << endl;
 
         cout << "\033[38;5;82;3m=> Press '#' for exit game." << endl;
-        cout << "=> Press '@' for clear the display.\033[0m" << endl;
+        cout << "=> Press '@' for clear the display." << endl;
+        cout << "=> Press '&' for feedback/suggestion/bug report/others.\033[0m" << endl;
         cout << "\033[38;5;123mWrite your choice:\033[0m" << endl;
     }
 
@@ -271,6 +272,17 @@ public:
             }
             else if (choice == '#')
                 return -1; // if user exits the game
+            else if (choice == '&')
+            {
+                general obj;
+                obj.feedback();
+                cout << "\033[38;5;154mThanks for submitting your feedback/bug report/suggestion. :)" << endl;
+                cout << "It will help us to improve your experience with the application. \033[38;5;190m:)\033[0m" << endl;
+                system("pause");
+                system("cls");
+                welcomeMenu(true); // again displaying the welcome menu after clear of display
+                continue;
+            }
             else
             {
                 cout << "\033[1;31mFatal Error: Invalid choice." << endl;
