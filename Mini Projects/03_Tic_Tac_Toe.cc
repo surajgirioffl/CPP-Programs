@@ -119,13 +119,26 @@ class allMenu
 {
     // static int userSelectedDefaultGameLevel;//we can't use static int as data member of class
 public:
-    /*welcome menu*/
-    void welcomeMenu()
+    /*welcome menu with and without ASCII art of logo. By default 'false' for printing ASCII art. Pass 'true' to print ASCII art*/
+    void welcomeMenu(bool withAsciiArt = false)
     {
         cout << "\e[2J\e[H";
-        cout << "\e[1;31m************WELCOME TO TIC-TAC-TOE GAME.************" << endl;
+        if (!withAsciiArt)
+            cout << "\e[1;31m************WELCOME TO TIC-TAC-TOE GAME.************" << endl;
+        else
+        {
+            cout << "\033[1;31m";
+            cout << " _____  _         _____              _____            " << endl;
+            cout << "|_   _|(_)  ___  |_   _|__ _   ___  |_   _|___    ___ " << endl;
+            cout << "  | |  | | / __|   | | / _` | / __|   | | / _ \\  / _ \\" << endl;
+            cout << "  | |  | || (__    | || (_| || (__    | || (_) ||  __/" << endl;
+            cout << "  |_|  |_| \\___|   |_| \\__,_| \\___|   |_| \\___/  \\___|" << endl;
+            cout << "                                                      " << endl;
+        }
         cout.width(63);
-        cout << "\e[1;36mDeveloper: Suraj Kumar Giri\e[0m" << endl;
+        cout << "\e[1;36mDeveloper: Suraj Kumar Giri\e[0m" << endl
+             << endl;
+        ;
     }
 
     /*top block of gameRestartMenu which need to print repeatedly if user clear the screen*/
@@ -1911,7 +1924,7 @@ int main()
             if (restartNextNewGameWithNewGameConfiguration) // can..continue.. variable returns true if continue the game with last game configuration else false.
             {
                 allMenu menuObject;
-                menuObject.welcomeMenu();
+                menuObject.welcomeMenu(true);
             }
             ticTacToe obj;
             if (!obj.start()) // start returns true after successful completion of game one times
