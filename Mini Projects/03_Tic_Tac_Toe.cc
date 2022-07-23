@@ -6,6 +6,17 @@
  *Time: 23:54:27
  */
 
+/***ADDITION OF NEW FEATURE ANNOUNCED****
+ *author: Suraj Kumar Giri.
+ *Date: 23-07-2022
+ *Time: 20:53:30
+ *Purpose:
+ *1) To add feature of playing one times user, 2nd times computer iteratively (By default).
+ *   But the configuration can be changed in 'sudo' mode to desired configuration (like only user will start the game OR only computer will start the game).
+ *2) Feature of 2 players mode without any interfere of computer.
+ *   There may be changed in the current configuration of program because some functions are compulsory to used in newly created class. So, we use inheritance in a better way. (Instead of inheriting the all things while some of them are only required.)
+ */
+
 /**Tic-Tac-Toe playing board
  **For user
   1 2 3
