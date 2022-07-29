@@ -6,6 +6,17 @@
  *Time: 23:54:27
  */
 
+/***ANNOUNCEMENT****
+ *author: Suraj Kumar Giri.
+ *Date: 29-07-2022
+ *Time: 19:18:52
+ *
+ *THERE WILL NO FURTHER UPDATES/CHANGES TO THIS FILE.
+ *All further updates/changes will commit in a new separate repository 'TicTacToe'.
+ *All commits history of this file remains safe in that repository also.
+ *NEW REPOSITORY LINK: https://github.com/surajgirioffl/TicTacToe
+ */
+
 /***ADDITION OF NEW FEATURE ANNOUNCED****
  *author: Suraj Kumar Giri.
  *Date: 23-07-2022
@@ -1938,6 +1949,10 @@ public:
     {
         return startGame();
     }
+};
+
+class twoPlayersTicTacToe
+{
 };
 
 /*main() function*/
