@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
         {
             while (!fin.eof())
             {
-                char ch;
-                fin >> ch;
-                cout << ch;
+                char array[1000];
+                fin.getline(array, sizeof(array));
+                cout << array << endl;
             }
             fin.close();
         }
